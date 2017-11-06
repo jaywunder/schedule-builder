@@ -1,0 +1,3 @@
+
+export let COURSES_FETCH   = 'COURSES_FETCH'
+export let COURSES_SUCCESS = 'COURSES_SUCCESS'

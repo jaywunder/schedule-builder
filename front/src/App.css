@@ -1,0 +1,79 @@
+/*@import "~antd/dist/antd.css";*/
+
+:root {
+  --dark-green: #2f5e39;
+  --light-green: #8bb138;
+  --unit: 12.5;
+}
+
+* {
+  outline: none;
+}
+
+html, body, #root, .App {
+  height: 100%;
+}
+
+.util.vertical-center {
+  display: flex;
+  align-items: center;
+}
+
+.rbc-time-header { display: none; }
+.rbc-time-content { border-top: none; }
+.rbc-current-time-indicator { display: none !important; }
+.rbc-current-time-indicator::before { display: none; }
+.rbc-current-time-indicator::after { display: none; }
+.rbc-today { background-color: rgba(0,0,0,0) }
+.rbc-now { font-weight: normal !important; }
+.rbc-event:hover { z-index: 999; }
+
+.App {
+  font-size: large;
+  display: grid;
+  grid-row-gap: 2em;
+  grid-column-gap: 2em;
+  grid-template-columns: 2em 2fr 1fr 2em;
+  grid-template-rows:
+    calc(1vh * var(--unit))
+    calc(calc(6.5vh * var(--unit)) - 1em)
+    2em;
+  /*grid-template-rows: auto 1fr 1em;*/
+  grid-template-areas:
+    "header header header header"
+    "padL calendar queries padR"
+    "foot foot foot foot";
+}
+
+.App .header {
+  grid-area: header;
+  background-color: var(--dark-green);
+  height: 4em;
+  padding: 1em;
+  color: white;
+}
+
+.App .header * {
+  display: inline-block;
+}
+
+.App .logo {
+  height: 3em;
+}
+
+.App h1 {
+  padding: 0;
+  margin: 0;
+  margin-left: .5em;
+}
+
+.App .calendar {
+  grid-area: calendar;
+  height: 100%;
+}
+
+.App .queries {
+  grid-area: queries;
+  height: 100%;
+  overflow-y: scroll;
+}
