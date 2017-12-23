@@ -9,11 +9,22 @@ import Delete from './util/Delete'
 import './CourseSearch.css'
 
 export default class CourseSearch extends Component {
+
+  static propTypes = {
+    onChange: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    onHasOneCourse: PropTypes.func.isRequired,
+    queryId: PropTypes.number.isRequired,
+  }
+
+  static defaultProps = {}
+
   componentWillMount() {
     const state = this.context.store.getState()
     this.state = {
+      query: '',
       enabled: true,
-      collapsed: false,
+      collapsed: true,
       value: '',
       courses: state.courses,
       sectionStates: {},
@@ -27,22 +38,22 @@ export default class CourseSearch extends Component {
 
   componentWillUnmount() { unsubscribe(this) }
 
-  getSuggestions(search) {
-    if (!this.state.courses || search === '' || !search || search.length <= 2) return []
-    const courses = this.state.courses
-    const searches = {
-      courseNumber: /^\d{5}$/,
-      subjNumSec: /^[a-z]{2,4}\d{0,3}[a-z0-9]{0,3}$/,
-      title: /^.*$/,
-    }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.query !== this.state.query)
+      this.onQueryChange(this.state.query)
+  }
 
+  // TODO: Move this out to SOMEHWERE else
+  getSuggestions(search) {
+    if (!this.state.courses || search === '' || !search || search.length < 2) return []
+    const courses = this.state.courses
     search = search.trim()
       .toLowerCase()
       .replace(/ /g, '')
 
-    const isCourseNumber = !!search.match(searches.courseNumber)
-    const isSubjNumSec = !!search.match(searches.subjNumSec)
-    const isTitle = !!search.match(searches.title)
+    const isCourseNumber = !!search.match(/^\d{5}$/)
+    const isSubjNumSec = !!search.match(/^[a-z]{2,4}\d{0,3}[a-z0-9]{0,3}$/)
+    const isTitle = !!search.match(/^.*$/)
 
     if (isCourseNumber)
       return courses.filter(course => search === course.courseNumber)
@@ -53,23 +64,27 @@ export default class CourseSearch extends Component {
     else return []
   }
 
-  onQueryChange = event => {
-    const suggestions = this.getSuggestions(event.target.value)
+  onQueryChange = query => {
+    const suggestions = this.getSuggestions(query)
     const sectionStates = suggestions.map(() => true)
     this.setState({ suggestions, sectionStates }, () => {
-      if (this.hasOneCourse()) {
+      if (!this.hasOneCourse()) {
+        return this.props.onChange({ query: this.state.query, courses: [] })
+      }
 
-        (this.props.onChange && this.props.onChange(this.state.suggestions));
-        (this.props.onHasOneCourse && this.props.onHasOneCourse());
+      this.props.onChange({
+        query: this.state.query,
+        courses: this.state.suggestions
+      })
 
-        this.setState({
-          sectionStates: this.groupCourses()
-            .map(([c]) => c.section)
-            .filter((sec, i, arr) => i === 0 || sec !== arr[i-1])
-            .reduce((sum, elem, i) => Object.assign(sum, { [elem]: true }), {})
-        })
+      this.props.onHasOneCourse()
 
-      } else this.props.onChange([])
+      this.setState({
+        sectionStates: this.groupCourses()
+          .map(([c]) => c.section)
+          .filter((sec, i, arr) => i === 0 || sec !== arr[i-1])
+          .reduce((sum, elem, i) => Object.assign(sum, { [elem]: true }), {})
+      })
     })
   }
 
@@ -122,22 +137,28 @@ export default class CourseSearch extends Component {
 
     return <div
         className="CourseSearch"
-        onMouseEnter={() => this.setState({collapsed: false})}
-        onMouseLeave={() => this.setState({collapsed: true})}
+        onMouseEnter={() => this.setState({ collapsed: false })}
+        onMouseLeave={() => this.setState({ collapsed: true })}
       >
       { !hasOneCourse && <div>
         <div className="search-wrapper">
           <input
             className="search-input"
-            onChange={this.onQueryChange}
+            onChange={ event => this.setState({ query: event.target.value }) }
             type="text"
             placeholder="Search 'CS 120B', 'Adv Programming: C++', or '94803'"
-            ></input>
+          ></input>
 
         </div>
         <table>
           <tbody>
-            { this.reduceCourses().map((course, i) => <tr key={i}>
+            { this.reduceCourses().map((course, i) =>
+              <tr
+                key={i}
+                className="search-listing"
+                onClick={() => this.setState({ query: course.subject + course.number })}
+                // onClick={() => console.log(i, course)}
+              >
                 <td>{ course.subject }</td>
                 <td>{ course.number }</td>
                 <td>{ course.title }</td>

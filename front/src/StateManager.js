@@ -4,7 +4,6 @@ import { coursesSuccess } from './state/actions'
 import { subscribe, unsubscribe } from './util/state'
 import CSV from 'comma-separated-values'
 import csvFile from './assets/courses.csv'
-// console.log('csvFile', csvFile)
 
 export default class StateManager extends Component {
   componentWillMount() {
@@ -20,23 +19,24 @@ export default class StateManager extends Component {
 
     const unsubscribeCourses = store.subscribe(() => {
       const state = store.getState()
-      if (!state.courses && !this.fetchingCourses)
+      if (!state.courses)
         this.fetchCourses()
-      if (state.courses) this.fetchingCourses = false
     })
   }
 
   componentWillUnmount() { unsubscribe(this) }
 
   fetchCourses = async () => {
+    if (this.fetchingCourses) return
+
     this.fetchingCourses = true
 
     const cors = 'https://cors-anywhere.herokuapp.com/'
     const url = 'giraffe.uvm.edu:443/~rgweb/batch/curr_enroll_spring.txt'
     const s = 'String', n = 'Number', b = 'Boolean'
 
-    // const text = await fetch(cors+url).then(response => response.text())
-    const text = await fetch(csvFile).then(response => response.text())
+    const text = await fetch(cors+url).then(response => response.text())
+    // const text = await fetch(csvFile).then(response => response.text())
     const rows = text.split('\n')
       .map(row => row.replace(/("|,| |\d\d:\d\d|@uvm.edu)/g, ''))
 
@@ -65,6 +65,7 @@ export default class StateManager extends Component {
       .filter(course => course.number !== '391')
 
     this.context.store.dispatch(coursesSuccess(data))
+    this.fetchingCourses = false
   }
 
   render() {

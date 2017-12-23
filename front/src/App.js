@@ -40,20 +40,23 @@ class App extends Component {
           key={courseSearches.length}
           onChange={ this.onQueryChange(courseSearches.length) }
           onDelete={ this.onDeleteCourseSearch(courseSearches.length) }
-          onHasOneCourse={this.addCourseSearch}
+          onHasOneCourse={ this.addCourseSearch }
         />
       )
     }))
 
   onDeleteCourseSearch = i => () =>
-    this.setState(({ courseSearches, events }) => {
+    this.setState(({ courseSearches }) => {
       const newCourseSearches = courseSearches.concat()
       newCourseSearches.splice(i, 1, null)
       return { courseSearches: newCourseSearches }
     })
 
-  onQueryChange = i => courses =>
+  onQueryChange = i => ({ query, courses }) =>
     this.setState(({ events, activeCourses }) => {
+      console.log('query', query)
+      console.log('courses', courses)
+
       const newEvents = events.concat()
       newEvents.splice(i, 1, this.coursesToEvents(courses, i))
       return { events: newEvents, activeCourses: activeCourses.concat(courses) }

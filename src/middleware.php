@@ -5,6 +5,9 @@
 
 use Slim\Http\Request;
 use Slim\Http\Response;
+use School\userMiddleware;
+
+$app->add(userMiddleware);
 
 $app->add(function (Request $request, Response $response, callable $next) {
   $uri = $request->getUri();
