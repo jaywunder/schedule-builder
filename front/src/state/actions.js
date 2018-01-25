@@ -8,7 +8,7 @@ export let coursesSuccess = (courses) => ({
   courses
 })
 
-export let addQuery = (queryId, query) => ({
+export let addQuery = (queryId, query = '') => ({
   type: types.ADD_QUERY,
   queryId, query
 })

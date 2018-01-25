@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Collapse } from 'react-collapse'
 import fuzzysearch from 'fuzzysearch'
 import { subscribe, unsubscribe } from '../util/state'
+import { modifyQuery } from '../state/actions'
 import Course from './Course'
 import Toggle from './util/Toggle'
 import Delete from './util/Delete'
@@ -11,13 +12,8 @@ import './CourseSearch.css'
 export default class CourseSearch extends Component {
 
   static propTypes = {
-    onChange: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired,
-    onHasOneCourse: PropTypes.func.isRequired,
-    queryId: PropTypes.number.isRequired,
+    queryId: PropTypes.string.isRequired,
   }
-
-  static defaultProps = {}
 
   componentWillMount() {
     const state = this.context.store.getState()
@@ -25,7 +21,6 @@ export default class CourseSearch extends Component {
       query: '',
       enabled: true,
       collapsed: true,
-      value: '',
       courses: state.courses,
       sectionStates: {},
       suggestions: []
@@ -34,13 +29,19 @@ export default class CourseSearch extends Component {
 
   componentDidMount() {
     this.unsubscribeStore = subscribe(this)('courses')
+    this.unsubscribeQueries = subscribe(this)('queries', () => {
+      const state = this.context.store.getState()
+      console.log('IN THE SIBSCIPTION HERE');
+      console.log(state.queries[this.props.queryId])
+      this.setState(state.queries[this.props.queryId])
+    })
   }
 
   componentWillUnmount() { unsubscribe(this) }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.query !== this.state.query)
-      this.onQueryChange(this.state.query)
+    // if (prevState.query !== this.state.query)
+    //   this.onQueryChange(this.state.query)
   }
 
   // TODO: Move this out to SOMEHWERE else
@@ -64,28 +65,33 @@ export default class CourseSearch extends Component {
     else return []
   }
 
-  onQueryChange = query => {
-    const suggestions = this.getSuggestions(query)
-    const sectionStates = suggestions.map(() => true)
-    this.setState({ suggestions, sectionStates }, () => {
-      if (!this.hasOneCourse()) {
-        return this.props.onChange({ query: this.state.query, courses: [] })
-      }
+  onQueryChange = event => {
 
-      this.props.onChange({
-        query: this.state.query,
-        courses: this.state.suggestions
-      })
+    console.log('EVENT:', event.target.value);
 
-      this.props.onHasOneCourse()
+    this.context.store.dispatch(modifyQuery(this.props.queryId, event.target.value))
 
-      this.setState({
-        sectionStates: this.groupCourses()
-          .map(([c]) => c.section)
-          .filter((sec, i, arr) => i === 0 || sec !== arr[i-1])
-          .reduce((sum, elem, i) => Object.assign(sum, { [elem]: true }), {})
-      })
-    })
+    // const suggestions = this.getSuggestions(query)
+    // const sectionStates = suggestions.map(() => true)
+    // this.setState({ suggestions, sectionStates }, () => {
+    //   if (!this.hasOneCourse()) {
+    //     return this.props.onChange({ query: this.state.query, courses: [] })
+    //   }
+    //
+    //   this.props.onChange({
+    //     query: this.state.query,
+    //     courses: this.state.suggestions
+    //   })
+    //
+    //   this.props.onHasOneCourse()
+    //
+    //   this.setState({
+    //     sectionStates: this.groupCourses()
+    //       .map(([c]) => c.section)
+    //       .filter((sec, i, arr) => i === 0 || sec !== arr[i-1])
+    //       .reduce((sum, elem, i) => Object.assign(sum, { [elem]: true }), {})
+    //   })
+    // })
   }
 
   onAllToggle = () => this.setState(({ enabled }) => {
@@ -130,7 +136,7 @@ export default class CourseSearch extends Component {
     this.setState( ({collapsed}) => ({ collapsed: !collapsed }) )
 
   render() {
-    const { value, suggestions, courses } = this.state;
+    const { suggestions, courses } = this.state;
     const hasOneCourse = this.hasOneCourse()
     // const isOpened = true
     const isOpened = hasOneCourse && !this.state.collapsed && this.state.enabled
@@ -143,8 +149,9 @@ export default class CourseSearch extends Component {
       { !hasOneCourse && <div>
         <div className="search-wrapper">
           <input
+            value={this.state.query}
             className="search-input"
-            onChange={ event => this.setState({ query: event.target.value }) }
+            onChange={ this.onQueryChange }
             type="text"
             placeholder="Search 'CS 120B', 'Adv Programming: C++', or '94803'"
           ></input>

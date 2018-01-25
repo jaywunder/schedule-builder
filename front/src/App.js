@@ -7,6 +7,7 @@ import moment from 'moment'
 import generateSchedule from './algo'
 import tower from './assets/uvm_tower.svg'
 import { subscribe, unsubscribe } from './util/state'
+import { addQuery } from './state/actions'
 import CourseSearch from './components/CourseSearch'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -33,26 +34,33 @@ class App extends Component {
 
   componentWillUnmount() { unsubscribe(this) }
 
-  addCourseSearch = () =>
+  addCourseSearch = () => {
+    // TODO: Better queryId generation
+    const queryId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+
+    this.context.store.dispatch(addQuery(queryId))
     this.setState(({ courseSearches }) => ({
       courseSearches: courseSearches.concat(
         <CourseSearch
-          key={courseSearches.length}
+          key={queryId}
+          queryId={queryId}
           onChange={ this.onQueryChange(courseSearches.length) }
           onDelete={ this.onDeleteCourseSearch(courseSearches.length) }
           onHasOneCourse={ this.addCourseSearch }
         />
       )
     }))
+  }
 
-  onDeleteCourseSearch = i => () =>
+  onDeleteCourseSearch = i => () => {
     this.setState(({ courseSearches }) => {
       const newCourseSearches = courseSearches.concat()
       newCourseSearches.splice(i, 1, null)
       return { courseSearches: newCourseSearches }
     })
+  }
 
-  onQueryChange = i => ({ query, courses }) =>
+  onQueryChange = i => ({ query, courses }) => {
     this.setState(({ events, activeCourses }) => {
       console.log('query', query)
       console.log('courses', courses)
@@ -61,6 +69,7 @@ class App extends Component {
       newEvents.splice(i, 1, this.coursesToEvents(courses, i))
       return { events: newEvents, activeCourses: activeCourses.concat(courses) }
     })
+  }
 
   coursesToEvents(courses, index) {
     const baseTime = moment().startOf('week')

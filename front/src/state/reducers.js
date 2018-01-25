@@ -10,41 +10,42 @@ export function courses(state = null, action) {
       return action.courses
       break;
   }
-  return null
+  return state
 }
 
 export function queries(state = {}, action) {
   switch (action.type) {
     case types.ADD_QUERY:
-      const { queryId, query } = action
-      state[queryId] = {
-        queryId, query,
-        enabled: true,
-      }
-      break
+      return Object.assign({
+        [action.queryId]: {
+          query: action.query,
+          enabled: true,
+        }
+      }, state)
 
     case types.REMOVE_QUERY:
+      state = Object.assign({}, state)
       delete state[action.queryId]
-      break
+      return state
 
     case types.MODIFY_QUERY:
       state[action.queryId].query = action.query
-      break
+      return Object.assign({}, state)
 
     case types.ENABLE_QUERY:
       state[action.queryId].enabled = true
-      break
+      return Object.assign({}, state)
 
     case types.DISABLE_QUERY:
       state[action.queryId].enabled = false
-      break
+      return Object.assign({}, state)
 
     case types.TOGGLE_QUERY:
       state[action.queryId].enabled = !state[action.queryId].enabled
-      break
+      return Object.assign({}, state)
 
   }
-  return null
+  return state
 }
 
 export function sections(state = {}, action) {
@@ -78,5 +79,5 @@ export function sections(state = {}, action) {
       break
 
   }
-  return null
+  return state
 }
