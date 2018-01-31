@@ -40,10 +40,16 @@ export default class StateManager extends Component {
     const rows = text.split('\n')
       .map(row => row.replace(/("|,| |\d\d:\d\d|@uvm.edu)/g, ''))
 
-    const data = CSV.parse(text, {
-        cast: [s, s, s, s, s, s, s, s, n, n, s, s, s, n, s, s, s, s, s],
-        header: ['subject', 'number', 'title', 'courseNumber', 'section', 'lecLab', 'campcode', 'collcode', 'maxEnroll', 'currentEnroll', 'startTime', 'endTime', 'days', 'credits', 'building', 'room', 'instructor', 'netId', 'email']
-      })
+
+    console.log('HEYYY THEREEE')
+    const scraped = await fetch('/api/scrape').then(res => res.json())
+    console.log('scraped', scraped)
+
+    // const data = CSV.parse(text, {
+    //     cast: [s, s, s, s, s, s, s, s, n, n, s, s, s, n, s, s, s, s, s],
+    //     header: ['subject', 'number', 'title', 'courseNumber', 'section', 'lecLab', 'campcode', 'collcode', 'maxEnroll', 'currentEnroll', 'startTime', 'endTime', 'days', 'credits', 'building', 'room', 'instructor', 'netId', 'email']
+    //   })
+    const data = (await fetch('/api/scrape').then(res => res.json()))
       .map((elem, i) => { elem.text = rows[i]; return elem })
       // .filter(({courseNumber}, i, arr) => i > 0 && courseNumber !== arr[i-1].courseNumber)
       // .filter(({maxEnroll}) => maxEnroll === 0)
@@ -63,6 +69,8 @@ export default class StateManager extends Component {
       .filter((_, i) => i !== 0)
       .filter(course => course.number !== '491')
       .filter(course => course.number !== '391')
+
+    console.log('data', data)
 
     this.context.store.dispatch(coursesSuccess(data))
   }
