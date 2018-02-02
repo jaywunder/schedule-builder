@@ -11,8 +11,7 @@
 
 $_SERVER['SCRIPT_NAME'] = './index.php';
 
-require '../vendor/autoload.php';
-// require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 session_start();
 

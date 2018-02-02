@@ -6,8 +6,10 @@ use Slim\Http\Stream;
 
 use Goutte\Client;
 
+define('ROOT', '/schedule-builder/public');
+
 // Routes
-$app->get('/', function (Request $request, Response $response, array $args) {
+$app->get(ROOT . '/', function (Request $request, Response $response, array $args) {
   $mimes = new \Mimey\MimeTypes;
   $path = __DIR__ . '/../front/build/index.html';
   $file = fopen($path, 'rb');
@@ -19,7 +21,7 @@ $app->get('/', function (Request $request, Response $response, array $args) {
     ->withBody(new Stream($file));
 });
 
-$app->get('/front/{path:.*}', function (Request $request, Response $response, array $args) {
+$app->get(ROOT . '/front/{path:.*}', function (Request $request, Response $response, array $args) {
   $users = $this->db::table('users');
   $mimes = new \Mimey\MimeTypes;
 
@@ -47,7 +49,7 @@ $app->get('/front/{path:.*}', function (Request $request, Response $response, ar
 });
 
 
-$app->get('/api/user', function (Request $request, Response $response, array $args) {
+$app->get(ROOT . '/api/user', function (Request $request, Response $response, array $args) {
 
   // return $response->withJson(var_dump($this));
 
@@ -55,7 +57,7 @@ $app->get('/api/user', function (Request $request, Response $response, array $ar
 
 });
 
-$app->get('/api/scrape', function (Request $request, Response $response, array $args) {
+$app->get(ROOT . '/api/scrape', function (Request $request, Response $response, array $args) {
 
   $client = new Client();
   $crawler = $client->request('GET', 'https://giraffe.uvm.edu/~rgweb/batch/swrsectc_fall_soc_201809/all_sections.html');
