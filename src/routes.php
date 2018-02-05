@@ -6,10 +6,10 @@ use Slim\Http\Stream;
 
 use Goutte\Client;
 
-define('ROOT', '');
+define('ROOT', '/schedule-builder/public/index.php');
 
 // Routes
-$app->get(ROOT . '/', function (Request $request, Response $response, array $args) {
+$app->get(ROOT . '/home', function (Request $request, Response $response, array $args) {
   $mimes = new \Mimey\MimeTypes;
   $path = __DIR__ . '/../front/build/index.html';
   $file = fopen($path, 'rb');
