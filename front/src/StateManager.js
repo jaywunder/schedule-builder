@@ -49,7 +49,7 @@ export default class StateManager extends Component {
     //     cast: [s, s, s, s, s, s, s, s, n, n, s, s, s, n, s, s, s, s, s],
     //     header: ['subject', 'number', 'title', 'courseNumber', 'section', 'lecLab', 'campcode', 'collcode', 'maxEnroll', 'currentEnroll', 'startTime', 'endTime', 'days', 'credits', 'building', 'room', 'instructor', 'netId', 'email']
     //   })
-    const data = (await fetch('/api/scrape').then(res => res.json()))
+    const data = (await fetch('/schedule-builder/public/index.php/api/scrape').then(res => res.json()))
       .map((elem, i) => { elem.text = rows[i]; return elem })
       // .filter(({courseNumber}, i, arr) => i > 0 && courseNumber !== arr[i-1].courseNumber)
       // .filter(({maxEnroll}) => maxEnroll === 0)
