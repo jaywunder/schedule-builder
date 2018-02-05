@@ -6,7 +6,7 @@ use Slim\Http\Stream;
 
 use Goutte\Client;
 
-define('ROOT', '/schedule-builder/public');
+define('ROOT', '');
 
 // Routes
 $app->get(ROOT . '/', function (Request $request, Response $response, array $args) {
