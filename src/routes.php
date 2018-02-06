@@ -130,6 +130,8 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
       $endTime = strval(intval(substr($endTime, 0, 2)) + 12) + substr($endTime, 2);
     }
 
+    $this->logger->info('startTime :' . $startTime);
+
     $json[] = [
       'subject' => $currentSubject,
       'number' => $currentNumber,
