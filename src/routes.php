@@ -122,6 +122,14 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
       $currentTitle = $matches[4][$i];
     }
 
+    $startTime = $matches[13][$i];
+    $endTime = $matches[14][$i];
+
+    if (intval(substr($matches[13][$i], 0, 2)) < 8) {
+      $startTime = (intval(substr($startTime, 0, 2)) + 12) + substr($startTime, 2);
+      $endTime = (intval(substr($endTime, 0, 2)) + 12) + substr($endTime, 2);
+    }
+
     $json[] = [
       'subject' => $currentSubject,
       'number' => $currentNumber,
@@ -133,8 +141,8 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
       'collcode' => '',
       'maxEnroll' => $matches[10][$i],
       'currentEnroll' => $matches[11][$i],
-      'startTime' => $matches[13][$i],
-      'endTime' => $matches[14][$i],
+      'startTime' => $startTime,
+      'endTime' => $endTime,
       'days' => $matches[15][$i] . $matches[16][$i] . $matches[17][$i] . $matches[18][$i] . $matches[19][$i],
       'credits' => $matches[9][$i],
       'building' => $matches[20][$i],
