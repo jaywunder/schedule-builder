@@ -132,7 +132,7 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
 
       $this->logger->info('startTime: ' . $matches[13][$i] . ' ' . substr($matches[13][$i], 0, 2) . ' ' . $matches[13][$i]);
       $this->logger->info('startTime: ' . strval($plus12));
-      $this->logger->info('startTime: ' . substr($startTime, 2));
+      $this->logger->info('startTime: ' . $startTime);
       $this->logger->info('');
       $this->logger->info('');
     }
