@@ -14,9 +14,9 @@ export default ({ course, showSection }) => {
     <br/>
     <div className="indent">
       { course.startTime }-{ course.endTime } &nbsp; { course.days }<br/>
-      { seats } seat{seats !== 1 && 's'} left<br/>
-      { course.credits } credit{ course.credits !== 1 && 's' }<br/>
-      { course.building }<br/>
+      {/* { seats } seat{seats !== 1 && 's'} left<br/> */}
+      {/* { course.credits } credit{ course.credits !== 1 && 's' }<br/> */}
+      { course.building } {course.room}<br/>
       { instructor }
     </div>
   </div>
