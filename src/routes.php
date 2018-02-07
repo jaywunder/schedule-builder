@@ -127,7 +127,10 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
 
     if (intval(substr($matches[13][$i], 0, 2)) < 8) {
       $startTime = strval(intval(substr($startTime, 0, 2)) + 12) . substr($matches[13][$i], 2);
-      $endTime = strval(intval(substr($startTime, 0, 2)) + 12) . substr($matches[14][$i], 2);
+    }
+
+    if (intval(substr($matches[14][$i], 0, 2)) < 8) {
+      $endTime = strval(intval(substr($endTime, 0, 2)) + 12) . substr($matches[14][$i], 2);
     }
 
     $json[] = [
