@@ -122,17 +122,16 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
       $currentTitle = $matches[4][$i];
     }
 
-    $startTime = $matches[13][$i] + '';
-    $endTime = $matches[14][$i] + '';
-
+    $startTime = $matches[13][$i] . '';
+    $endTime = $matches[14][$i] . '';
 
     if ($i < 10) {
 
       $plus12 = intval(substr($startTime, 0, 2)) + 12;
 
       $this->logger->info('startTime: ' . $matches[13][$i] . ' ' . substr($matches[13][$i], 0, 2) . ' ' . $matches[13][$i]);
-      $this->logger->info('startTime: ' . strval($plus12));
-      $this->logger->info('startTime: ' . substr($matches[13][$i], 2));
+      $this->logger->info('startTime: ' . strval($plus12) . substr($matches[13][$i], 2));
+      // $this->logger->info('startTime: ' . );
       $this->logger->info('');
       $this->logger->info('');
     }
