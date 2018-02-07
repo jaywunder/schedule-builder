@@ -125,20 +125,9 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
     $startTime = $matches[13][$i] . '';
     $endTime = $matches[14][$i] . '';
 
-    if ($i < 10) {
-
-      $plus12 = intval(substr($startTime, 0, 2)) + 12;
-
-      $this->logger->info('startTime: ' . $matches[13][$i] . ' ' . substr($matches[13][$i], 0, 2) . ' ' . $matches[13][$i]);
-      $this->logger->info('startTime: ' . strval($plus12) . substr($matches[13][$i], 2));
-      // $this->logger->info('startTime: ' . );
-      $this->logger->info('');
-      $this->logger->info('');
-    }
-
     if (intval(substr($matches[13][$i], 0, 2)) < 8) {
-      $startTime = strval(intval(substr($startTime, 0, 2)) + 12) . substr($startTime, 2);
-      $endTime = strval(intval(substr($endTime, 0, 2)) + 12) . substr($endTime, 2);
+      $startTime = strval(intval(substr($startTime, 0, 2)) + 12) . substr($matches[13][$i], 2);
+      $endTime = strval(intval(substr($startTime, 0, 2)) + 12) . substr($matches[14][$i], 2);
     }
 
     $json[] = [
