@@ -15,59 +15,40 @@ export default class CourseSearch extends Component {
     queryId: PropTypes.string.isRequired,
   }
 
-  componentWillMount() {
+  constructor(...args) {
+    super(...args)
+
     const state = this.context.store.getState()
-    this.state = {
-      query: '',
-      enabled: true,
+    this.state = Object.assign({
       collapsed: true,
       courses: state.courses,
-      sectionStates: {},
-      suggestions: []
-    }
+      results: state.results[this.props.queryId].results
+    }, state.queries[this.props.queryId])
   }
 
   componentDidMount() {
     this.unsubscribeStore = subscribe(this)('courses')
+
     this.unsubscribeQueries = subscribe(this)('queries', () => {
       const state = this.context.store.getState()
-      console.log('IN THE SIBSCIPTION HERE');
-      console.log(state.queries[this.props.queryId])
       this.setState(state.queries[this.props.queryId])
+    })
+
+    this.unsubscribeResults = this.context.store.subscribe(() => {
+      const state = this.context.store.getState()
+      const { queryId } = this.props
+
+      if (state.results[queryId].results !== this.state.results) {
+        this.setState({ results: state.results[queryId].results })
+      }
     })
   }
 
   componentWillUnmount() { unsubscribe(this) }
 
-  componentDidUpdate(prevProps, prevState) {
-    // if (prevState.query !== this.state.query)
-    //   this.onQueryChange(this.state.query)
-  }
-
-  // TODO: Move this out to SOMEHWERE else
-  getSuggestions(search) {
-    if (!this.state.courses || search === '' || !search || search.length < 2) return []
-    const courses = this.state.courses
-    search = search.trim()
-      .toLowerCase()
-      .replace(/ /g, '')
-
-    const isCourseNumber = !!search.match(/^\d{5}$/)
-    const isSubjNumSec = !!search.match(/^[a-z]{2,4}\d{0,3}[a-z0-9]{0,3}$/)
-    const isTitle = !!search.match(/^.*$/)
-
-    if (isCourseNumber)
-      return courses.filter(course => search === course.courseNumber)
-    else if (isSubjNumSec)
-      return courses.filter(course => course.subjNumSec.startsWith(search))
-    else if (isTitle)
-      return courses.filter(course => fuzzysearch(search, course.title.toLowerCase()))
-    else return []
-  }
-
   onQueryChange = event => {
 
-    console.log('EVENT:', event.target.value);
+    // console.log('EVENT:', event.target.value);
 
     this.context.store.dispatch(modifyQuery(this.props.queryId, event.target.value))
 
@@ -94,12 +75,14 @@ export default class CourseSearch extends Component {
     // })
   }
 
+  // TODO:
   onAllToggle = () => this.setState(({ enabled }) => {
     if (enabled) this.props.onChange([])
     else this.props.onChange(this.state.suggestions)
     return { enabled: !enabled }
   })
 
+  // TODO:
   onSectionToggle = section => () =>
     this.setState(({ sectionStates }) => ({
       sectionStates: Object.assign(sectionStates, { [section]: !sectionStates[section] })
@@ -108,7 +91,7 @@ export default class CourseSearch extends Component {
     ))
 
   reduceCourses = () =>
-    this.state.suggestions.reduce((sum, sugg) =>
+    this.state.results.reduce((sum, sugg) =>
       sum.findIndex(elem =>
         elem.subject + elem.number === sugg.subject + sugg.number
       ) > -1
@@ -116,12 +99,13 @@ export default class CourseSearch extends Component {
         : sum.concat(sugg)
     , [])
 
+  // TODO:
   groupCourses = () => {
-    const { suggestions } = this.state
-    const groups = [[suggestions[0]]]
-    for (let i = 1; i < suggestions.length; i++) {
-      const sugg = suggestions[i]
-      const group = groups[groups.length-1]
+    const { results } = this.state
+    const groups = [[results[0]]]
+    for (let i = 1; i < results.length; i++) {
+      const sugg = results[i]
+      const group = groups[groups.length - 1]
 
       if (sugg.section === group[0].section)
         group.push(sugg)
@@ -136,7 +120,7 @@ export default class CourseSearch extends Component {
     this.setState( ({collapsed}) => ({ collapsed: !collapsed }) )
 
   render() {
-    const { suggestions, courses } = this.state;
+    const { results, courses } = this.state;
     const hasOneCourse = this.hasOneCourse()
     // const isOpened = true
     const isOpened = hasOneCourse && !this.state.collapsed && this.state.enabled
@@ -163,8 +147,11 @@ export default class CourseSearch extends Component {
               <tr
                 key={i}
                 className="search-listing"
-                onClick={() => this.setState({ query: course.subject + course.number })}
-                // onClick={() => console.log(i, course)}
+                onClick={() =>
+                  this.context.store.dispatch(modifyQuery(
+                    this.props.queryId,
+                    course.subject + course.number
+                  ))}
               >
                 <td>{ course.subject }</td>
                 <td>{ course.number }</td>
@@ -180,9 +167,9 @@ export default class CourseSearch extends Component {
           <Toggle state={this.state.enabled} onToggle={this.onAllToggle}/>
           <Delete onDelete={() => {this.props.onChange([]); this.props.onDelete()}}/>
           <h4 className="title">
-            { suggestions[0].subject }&nbsp;
-            { suggestions[0].number }&nbsp;
-            { suggestions[0].title }
+            { results[0].subject }&nbsp;
+            { results[0].number }&nbsp;
+            { results[0].title }
           </h4>
         </div>
 
@@ -194,7 +181,7 @@ export default class CourseSearch extends Component {
               <hr style={i === 0 ? { border: 'none' } : {}}/>
 
               <Toggle
-                state={this.state.sectionStates[group[0].section]}
+                state={this.state.disabledSections.includes(group[0].section)}
                 onToggle={this.onSectionToggle(group[0].section)}
               />
 

@@ -33,27 +33,7 @@ export let toggleQuery = (queryId) => ({
   queryId
 })
 
-export let addSections = (sectionId, query) => ({
-  type: types.ADD_SECTIONS,
-  sectionId, query
-})
-export let removeSections = (sectionId) => ({
-  type: types.REMOVE_SECTIONS,
-  sectionId
-})
-export let modifySections = (sectionId, query) => ({
-  type: types.MODIFY_SECTIONS,
-  sectionId, query
-})
-export let enableSections = (sectionId) => ({
-  type: types.ENABLE_SECTIONS,
-  sectionId
-})
-export let disableSections = (sectionId) => ({
-  type: types.DISABLE_SECTIONS,
-  sectionId
-})
-export let toggleSections = (sectionId) => ({
-  type: types.TOGGLE_SECTIONS,
-  sectionId
+export let updateResults = (queryId, results) => ({
+  type: types.UPDATE_RESULTS,
+  queryId, results
 })

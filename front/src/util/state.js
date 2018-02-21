@@ -12,13 +12,7 @@ export function subscribe(that) {
       return store.subscribe(() => {
         const state = store.getState()
         const [attr, cb] = attrs
-        console.log(
-          'UR SUBSCRIBED',
-          state[attr],
-          this.state[attr],
-          state[attr] !== this.state[attr],
-          state[attr] === this.state[attr],
-        )
+        
         if (state[attr] && state[attr] !== this.state[attr])
           this.setState({ [attr]: state[attr] }, cb)
       })

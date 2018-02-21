@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
+import fuzzysearch from 'fuzzysearch'
 import PropTypes from 'prop-types'
-import { coursesSuccess } from './state/actions'
+import { coursesSuccess, updateResults } from './state/actions'
 import { subscribe, unsubscribe } from './util/state'
 import CSV from 'comma-separated-values'
 import csvFile from './assets/courses.csv'
 
 export default class StateManager extends Component {
-  componentWillMount() {
-    this.state = {}
+  constructor(...args) {
+    super(...args)
+    this.state = {
+      queries: {},
+      courses: {},
+    }
 
     this.fetchingCourses = false
 
@@ -22,6 +27,25 @@ export default class StateManager extends Component {
       if (!state.courses)
         this.fetchCourses()
     })
+
+    subscribe(this)('courses')
+
+    this.unsubscribeQueries = subscribe(this)('queries', () => {
+      const { queries } = store.getState()
+
+      let differences = []
+      for (let queryId in queries) {
+        if (this.state[queryId] !== queries[queryId]) {
+          differences.push(queryId)
+        }
+      }
+
+      this.setState({ queries }, () => {
+        differences
+          .filter(queryId => queries[queryId].enabled)
+          .map(queryId => this.getResults(queryId))
+      })
+    })
   }
 
   componentWillUnmount() { unsubscribe(this) }
@@ -35,8 +59,8 @@ export default class StateManager extends Component {
     const url = 'giraffe.uvm.edu:443/~rgweb/batch/curr_enroll_spring.txt'
     const s = 'String', n = 'Number', b = 'Boolean'
 
-    const text = await fetch(cors+url).then(response => response.text())
-    // const text = await fetch(csvFile).then(response => response.text())
+    // const text = await fetch(cors+url).then(response => response.text())
+    const text = await fetch(csvFile).then(response => response.text())
     const rows = text.split('\n')
       .map(row => row.replace(/("|,| |\d\d:\d\d|@uvm.edu)/g, ''))
 
@@ -66,6 +90,33 @@ export default class StateManager extends Component {
 
     this.context.store.dispatch(coursesSuccess(data))
     this.fetchingCourses = false
+  }
+
+  getResults(queryId) {
+    let search = this.state.queries[queryId].query
+
+    if (!this.state.courses || search === '' || !search || search.length < 2)
+      return this.context.store.dispatch(updateResults(queryId, []))
+
+    const courses = this.state.courses
+    search = search.trim()
+      .toLowerCase()
+      .replace(/ /g, '')
+
+    const isCourseNumber = !!search.match(/^\d{5}$/)
+    const isSubjNumSec = !!search.match(/^[a-z]{2,4}\d{0,3}[a-z0-9]{0,3}$/)
+    const isTitle = !!search.match(/^.*$/)
+
+    let results;
+    if (isCourseNumber)
+      results = courses.filter(course => search === course.courseNumber)
+    else if (isSubjNumSec)
+      results = courses.filter(course => course.subjNumSec.startsWith(search))
+    else if (isTitle)
+      results = courses.filter(course => fuzzysearch(search, course.title.toLowerCase()))
+    else results = []
+
+    this.context.store.dispatch(updateResults(queryId, results))
   }
 
   render() {

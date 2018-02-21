@@ -20,6 +20,7 @@ export function queries(state = {}, action) {
         [action.queryId]: {
           query: action.query,
           enabled: true,
+          disabledSections: [], // fill with course ids
         }
       }, state)
 
@@ -48,36 +49,23 @@ export function queries(state = {}, action) {
   return state
 }
 
-export function sections(state = {}, action) {
+export function results(state = {}, action) {
+
   switch (action.type) {
-    case types.ADD_SECTIONS:
-      const { sectionId, sections } = action
-      state[sectionId] = {
-        sectionId, sections,
-        enabled: true,
-      }
-      break
+    case types.ADD_QUERY:
+      return Object.assign({
+        [action.queryId]: {
+          results: [],
+        }
+      }, state)
 
-    case types.REMOVE_SECTIONS:
-      delete state[action.sectionId]
-      break
-
-    case types.MODIFY_SECTIONS:
-      state[action.sectionId].sections = action.sections
-      break
-
-    case types.ENABLE_SECTIONS:
-      state[action.sectionId].enabled = true
-      break
-
-    case types.DISABLE_SECTIONS:
-      state[action.sectionId].enabled = false
-      break
-
-    case types.TOGGLE_SECTIONS:
-      state[action.sectionId].enabled = !state[action.sectionId].enabled
-      break
-
+    case types.UPDATE_RESULTS:
+      return Object.assign({}, state, {
+        [action.queryId]: {
+          results: action.results,
+        }
+      })
   }
+
   return state
 }
