@@ -102,6 +102,8 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
     $pre, $matches
   );
 
+  print($courseNumber);
+
   $json = [];
   $currentSubject = '';
   $currentNumber = '';
@@ -174,10 +176,10 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
     // 22: Ringler S
   }
 
-  // print '<pre>';
-  // print_r($json);
-  // print '</pre>';
-  return $response->withJson($json);
+  print '<pre>';
+  print_r($json);
+  print '</pre>';
+  // return $response->withJson($json);
 
   // array_map(function ($line) {
   //   $match = [];
