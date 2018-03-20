@@ -14,6 +14,10 @@ export function courses(state = null, action) {
 }
 
 export function queries(state = {}, action) {
+  let disabledSections
+  let nextState = Object.assign({}, state)
+  nextState[action.queryId] = Object.assign({}, state[action.queryId])
+
   switch (action.type) {
     case types.ADD_QUERY:
       return Object.assign({
@@ -25,31 +29,51 @@ export function queries(state = {}, action) {
       }, state)
 
     case types.REMOVE_QUERY:
-      state = Object.assign({}, state)
-      delete state[action.queryId]
-      return state
+      delete nextState[action.queryId]
+      return nextState
 
     case types.MODIFY_QUERY:
-      state[action.queryId].query = action.query
-      return Object.assign({}, state)
+      nextState[action.queryId].query = action.query
+      return Object.assign({}, nextState)
 
     case types.ENABLE_QUERY:
-      state[action.queryId].enabled = true
-      return Object.assign({}, state)
+      nextState[action.queryId].enabled = true
+      return nextState
 
     case types.DISABLE_QUERY:
-      state[action.queryId].enabled = false
-      return Object.assign({}, state)
+      nextState[action.queryId].enabled = false
+      return nextState
 
     case types.TOGGLE_QUERY:
-      state[action.queryId].enabled = !state[action.queryId].enabled
-      return Object.assign({}, state)
+      nextState[action.queryId].enabled = !nextState[action.queryId].enabled
+      return nextState
 
+    case types.ENABLE_SECTION:
+      disabledSections = nextState[action.queryId].disabledSections
+      if (!disabledSections.includes(action.section))
+        disabledSections.push(action.section)
+      return nextState
+
+    case types.DISABLE_SECTION:
+      disabledSections = nextState[action.queryId].disabledSections
+      if (disabledSections.includes(action.section))
+        disabledSections.splice(disabledSections.indexOf(action.section))
+      return nextState
+
+    case types.TOGGLE_SECTION:
+      disabledSections = nextState[action.queryId].disabledSections
+      if (!disabledSections.includes(action.section))
+        disabledSections.push(action.section)
+      else
+        disabledSections.splice(disabledSections.indexOf(action.section))
+      return nextState
   }
   return state
 }
 
 export function results(state = {}, action) {
+  let nextState = Object.assign({}, state)
+  nextState[action.queryId] = Object.assign({}, state[action.queryId])
 
   switch (action.type) {
     case types.ADD_QUERY:
@@ -59,12 +83,13 @@ export function results(state = {}, action) {
         }
       }, state)
 
+    case types.REMOVE_QUERY:
+      delete nextState[action.queryId]
+      return nextState
+
     case types.UPDATE_RESULTS:
-      return Object.assign({}, state, {
-        [action.queryId]: {
-          results: action.results,
-        }
-      })
+      nextState[action.queryId].results = action.results
+      return nextState
   }
 
   return state

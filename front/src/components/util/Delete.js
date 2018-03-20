@@ -22,7 +22,7 @@ export default class Delete extends Component {
       : <button
           onClick={() => this.setState(
             { clicked: true },
-            () => setTimeout(() => this.setState({ clicked: false }), 1500))}
+            () => this.timeoutId = setTimeout(() => this.setState({ clicked: false }), 1500))}
           style={{
             width: '12px',
             height: '12px',
@@ -32,5 +32,9 @@ export default class Delete extends Component {
             lineHeight: '0'
           }}
         >×</button>
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timeoutId)
   }
 }

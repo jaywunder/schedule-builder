@@ -32,6 +32,18 @@ export let toggleQuery = (queryId) => ({
   type: types.TOGGLE_QUERY,
   queryId
 })
+export let enableSection = (queryId, section) => ({
+  type: types.ENABLE_SECTION,
+  queryId, section
+})
+export let disableSection = (queryId, section) => ({
+  type: types.DISABLE_SECTION,
+  queryId, section
+})
+export let toggleSection = (queryId, section) => ({
+  type: types.TOGGLE_SECTION,
+  queryId, section
+})
 
 export let updateResults = (queryId, results) => ({
   type: types.UPDATE_RESULTS,

@@ -30,21 +30,24 @@ export default class StateManager extends Component {
 
     subscribe(this)('courses')
 
-    this.unsubscribeQueries = subscribe(this)('queries', () => {
+    this.unsubscribeQueries = store.subscribe(() => {
       const { queries } = store.getState()
 
-      let differences = []
+      const differences = []
       for (let queryId in queries) {
-        if (this.state[queryId] !== queries[queryId]) {
+        if (this.state.queries[queryId] !== queries[queryId]) {
           differences.push(queryId)
         }
       }
 
-      this.setState({ queries }, () => {
-        differences
-          .filter(queryId => queries[queryId].enabled)
-          .map(queryId => this.getResults(queryId))
-      })
+      if (queries !== this.state.queries) {
+        this.setState({ queries }, () => {
+          differences
+            .filter(queryId => queries[queryId].enabled)
+            .map(queryId => this.getResults(queryId))
+        })
+      }
+
     })
   }
 

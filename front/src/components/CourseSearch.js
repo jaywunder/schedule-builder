@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Collapse } from 'react-collapse'
 import fuzzysearch from 'fuzzysearch'
 import { subscribe, unsubscribe } from '../util/state'
-import { modifyQuery } from '../state/actions'
+import { modifyQuery, removeQuery, toggleQuery, toggleSection } from '../state/actions'
 import Course from './Course'
 import Toggle from './util/Toggle'
 import Delete from './util/Delete'
@@ -31,14 +31,17 @@ export default class CourseSearch extends Component {
 
     this.unsubscribeQueries = subscribe(this)('queries', () => {
       const state = this.context.store.getState()
-      this.setState(state.queries[this.props.queryId])
+
+      if (state.queries[this.props.queryId]) {
+        this.setState(state.queries[this.props.queryId])
+      }
     })
 
     this.unsubscribeResults = this.context.store.subscribe(() => {
       const state = this.context.store.getState()
       const { queryId } = this.props
 
-      if (state.results[queryId].results !== this.state.results) {
+      if (state.results[queryId] && state.results[queryId].results !== this.state.results) {
         this.setState({ results: state.results[queryId].results })
       }
     })
@@ -47,48 +50,21 @@ export default class CourseSearch extends Component {
   componentWillUnmount() { unsubscribe(this) }
 
   onQueryChange = event => {
-
-    // console.log('EVENT:', event.target.value);
-
     this.context.store.dispatch(modifyQuery(this.props.queryId, event.target.value))
-
-    // const suggestions = this.getSuggestions(query)
-    // const sectionStates = suggestions.map(() => true)
-    // this.setState({ suggestions, sectionStates }, () => {
-    //   if (!this.hasOneCourse()) {
-    //     return this.props.onChange({ query: this.state.query, courses: [] })
-    //   }
-    //
-    //   this.props.onChange({
-    //     query: this.state.query,
-    //     courses: this.state.suggestions
-    //   })
-    //
-    //   this.props.onHasOneCourse()
-    //
-    //   this.setState({
-    //     sectionStates: this.groupCourses()
-    //       .map(([c]) => c.section)
-    //       .filter((sec, i, arr) => i === 0 || sec !== arr[i-1])
-    //       .reduce((sum, elem, i) => Object.assign(sum, { [elem]: true }), {})
-    //   })
-    // })
   }
 
-  // TODO:
-  onAllToggle = () => this.setState(({ enabled }) => {
-    if (enabled) this.props.onChange([])
-    else this.props.onChange(this.state.suggestions)
+  handleDelete = () => {
+    this.context.store.dispatch(removeQuery(this.props.queryId))
+  }
+
+  handleAllToggle = () => this.setState(({ enabled }) => {
+    this.context.store.dispatch(toggleQuery(this.props.queryId))
     return { enabled: !enabled }
   })
 
-  // TODO:
-  onSectionToggle = section => () =>
-    this.setState(({ sectionStates }) => ({
-      sectionStates: Object.assign(sectionStates, { [section]: !sectionStates[section] })
-    }), () => this.props.onChange(
-      this.state.suggestions.filter(sugg => this.state.sectionStates[sugg.section])
-    ))
+  onSectionToggle = section => () => {
+    this.context.store.dispatch(toggleSection(this.props.queryId, section))
+  }
 
   reduceCourses = () =>
     this.state.results.reduce((sum, sugg) =>
@@ -99,7 +75,8 @@ export default class CourseSearch extends Component {
         : sum.concat(sugg)
     , [])
 
-  // TODO:
+  hasOneCourse = () => this.reduceCourses().length === 1
+
   groupCourses = () => {
     const { results } = this.state
     const groups = [[results[0]]]
@@ -114,15 +91,12 @@ export default class CourseSearch extends Component {
     return groups
   }
 
-  hasOneCourse = () => this.reduceCourses().length === 1
-
   onCollapseToggle = () =>
     this.setState( ({collapsed}) => ({ collapsed: !collapsed }) )
 
   render() {
     const { results, courses } = this.state;
     const hasOneCourse = this.hasOneCourse()
-    // const isOpened = true
     const isOpened = hasOneCourse && !this.state.collapsed && this.state.enabled
 
     return <div
@@ -164,8 +138,8 @@ export default class CourseSearch extends Component {
 
       { hasOneCourse && <div>
         <div className="util vertical-center">
-          <Toggle state={this.state.enabled} onToggle={this.onAllToggle}/>
-          <Delete onDelete={() => {this.props.onChange([]); this.props.onDelete()}}/>
+          <Toggle state={this.state.enabled} onToggle={this.handleAllToggle}/>
+          <Delete onDelete={this.handleDelete}/>
           <h4 className="title">
             { results[0].subject }&nbsp;
             { results[0].number }&nbsp;
@@ -181,7 +155,7 @@ export default class CourseSearch extends Component {
               <hr style={i === 0 ? { border: 'none' } : {}}/>
 
               <Toggle
-                state={this.state.disabledSections.includes(group[0].section)}
+                state={!this.state.disabledSections.includes(group[0].section)}
                 onToggle={this.onSectionToggle(group[0].section)}
               />
 
