@@ -62,8 +62,8 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
     return $node->text();
   });
   $pre = $preArray[0];
-  // print 'length: ' . count($pre_array) . '<br>';
-  // print '<pre>' . $pre . '</pre>';
+  print 'length: ' . count($pre_array) . '<br>';
+  print '<pre>' . $pre . '</pre>';
 
   /*
 
