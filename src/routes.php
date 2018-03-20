@@ -30,9 +30,6 @@ $app->get(ROOT . '/front/{path:.*}', function (Request $request, Response $respo
   // return $response->withJson(var_dump( $args ));
 
   // TODO: check if the string has a "/../" in it
-
-  $this->logger->info('serving :' . $args['path']);
-
   if ($args['path'] == '/') $args['path'] = 'index.html';
 
   $path = __DIR__ . '/../front/build/' . $args['path'];
@@ -47,7 +44,6 @@ $app->get(ROOT . '/front/{path:.*}', function (Request $request, Response $respo
   // Render index view
   // return $this->renderer->render($response, $args['path'], $args);
 });
-
 
 $app->get(ROOT . '/api/user', function (Request $request, Response $response, array $args) {
 

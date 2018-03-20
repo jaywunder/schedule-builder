@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
+import fuzzysearch from 'fuzzysearch'
 import PropTypes from 'prop-types'
-import { coursesSuccess } from './state/actions'
+import { coursesSuccess, updateResults } from './state/actions'
 import { subscribe, unsubscribe } from './util/state'
 import CSV from 'comma-separated-values'
 import csvFile from './assets/courses.csv'
-// console.log('csvFile', csvFile)
 
 export default class StateManager extends Component {
-  componentWillMount() {
-    this.state = {}
+  constructor(...args) {
+    super(...args)
+    this.state = {
+      queries: {},
+      courses: {},
+    }
 
     this.fetchingCourses = false
 
@@ -20,15 +24,38 @@ export default class StateManager extends Component {
 
     const unsubscribeCourses = store.subscribe(() => {
       const state = store.getState()
-      if (!state.courses && !this.fetchingCourses)
+      if (!state.courses)
         this.fetchCourses()
-      if (state.courses) this.fetchingCourses = false
+    })
+
+    subscribe(this)('courses')
+
+    this.unsubscribeQueries = store.subscribe(() => {
+      const { queries } = store.getState()
+
+      const differences = []
+      for (let queryId in queries) {
+        if (this.state.queries[queryId] !== queries[queryId]) {
+          differences.push(queryId)
+        }
+      }
+
+      if (queries !== this.state.queries) {
+        this.setState({ queries }, () => {
+          differences
+            .filter(queryId => queries[queryId].enabled)
+            .map(queryId => this.getResults(queryId))
+        })
+      }
+
     })
   }
 
   componentWillUnmount() { unsubscribe(this) }
 
   fetchCourses = async () => {
+    if (this.fetchingCourses) return
+
     this.fetchingCourses = true
 
     const cors = 'https://cors-anywhere.herokuapp.com/'
@@ -73,6 +100,34 @@ export default class StateManager extends Component {
     console.log('data', data)
 
     this.context.store.dispatch(coursesSuccess(data))
+    this.fetchingCourses = false
+  }
+
+  getResults(queryId) {
+    let search = this.state.queries[queryId].query
+
+    if (!this.state.courses || search === '' || !search || search.length < 2)
+      return this.context.store.dispatch(updateResults(queryId, []))
+
+    const courses = this.state.courses
+    search = search.trim()
+      .toLowerCase()
+      .replace(/ /g, '')
+
+    const isCourseNumber = !!search.match(/^\d{5}$/)
+    const isSubjNumSec = !!search.match(/^[a-z]{2,4}\d{0,3}[a-z0-9]{0,3}$/)
+    const isTitle = !!search.match(/^.*$/)
+
+    let results;
+    if (isCourseNumber)
+      results = courses.filter(course => search === course.courseNumber)
+    else if (isSubjNumSec)
+      results = courses.filter(course => course.subjNumSec.startsWith(search))
+    else if (isTitle)
+      results = courses.filter(course => fuzzysearch(search, course.title.toLowerCase()))
+    else results = []
+
+    this.context.store.dispatch(updateResults(queryId, results))
   }
 
   render() {

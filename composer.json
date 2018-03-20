@@ -26,7 +26,8 @@
   "autoload": {
     "psr-4": {
       "Models\\": "src/models/",
-      "Routes\\": "src/routes/"
+      "Routes\\": "src/routes/",
+      "School\\": "src/school/"
     }
   },
   "autoload-dev": {

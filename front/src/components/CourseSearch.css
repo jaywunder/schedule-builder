@@ -69,3 +69,23 @@
   grid-area: info;
   text-align: left;
 }
+
+.CourseSearch table {
+  border-spacing: 0px 1em;
+}
+
+.CourseSearch .search-listing:hover td {
+  cursor: pointer;
+  position: relative;
+  /* border-bottom: pink -1px solid; */
+}
+
+.CourseSearch .search-listing:hover td:after {
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--dark-green);
+  content: ' ';
+}
