@@ -25,9 +25,6 @@ $app->get('/front/{path:.*}', function (Request $request, Response $response, ar
   // return $response->withJson(var_dump( $args ));
 
   // TODO: check if the string has a "/../" in it
-
-  $this->logger->info('serving :' . $args['path']);
-
   if ($args['path'] == '/') $args['path'] = 'index.html';
 
   $path = __DIR__ . '/../front/build/' . $args['path'];
@@ -42,11 +39,15 @@ $app->get('/front/{path:.*}', function (Request $request, Response $response, ar
   // return $this->renderer->render($response, $args['path'], $args);
 });
 
-
-$app->get('/api/user', function (Request $request, Response $response, array $args) {
-
-  // return $response->withJson(var_dump($this));
-
-  return $response->withJson(array('name' => 'jacob', 'age' => 19));
-
+$app->group('/api/v1', function () {
+  require 'routes/user.php';
+  require 'routes/schedule.php';
 });
+
+// $app->get('/api/user', function (Request $request, Response $response, array $args) {
+//
+//   // return $response->withJson(var_dump($this));
+//
+//   return $response->withJson(array('name' => 'jacob', 'age' => 19));
+//
+// });
