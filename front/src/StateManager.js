@@ -69,8 +69,8 @@ export default class StateManager extends Component {
 
 
     console.log('HEYYY THEREEE')
-    const scraped = await fetch('/api/scrape').then(res => res.json())
-    console.log('scraped', scraped)
+    // const scraped = await fetch('/api/scrape').then(res => res.json())
+    // console.log('scraped', scraped)
 
     // const data = CSV.parse(text, {
     //     cast: [s, s, s, s, s, s, s, s, n, n, s, s, s, n, s, s, s, s, s],
