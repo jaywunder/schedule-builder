@@ -31,6 +31,6 @@
     "eslint-plugin-react": "^7.1.0"
   },
 
-  "homepage": "/schedule-builder/public/front"
+  "homepage": "/front"
 
 }
