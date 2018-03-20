@@ -31,6 +31,6 @@
     "eslint-plugin-react": "^7.1.0"
   },
 
-  "homepage": "/front/build"
+  "homepage": "/front"
 
 }
