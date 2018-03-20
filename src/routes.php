@@ -62,8 +62,8 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
     return $node->text();
   });
   $pre = $preArray[0];
-  print 'length: ' . count($pre_array) . '<br>';
-  print '<pre>' . $pre . '</pre>';
+  // print 'length: ' . count($pre_array) . '<br>';
+  // print '<pre>' . $pre . '</pre>';
 
   /*
 
@@ -102,7 +102,7 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
     $pre, $matches
   );
 
-  print($courseNumber);
+  // print($courseNumber);
 
   $json = [];
   $currentSubject = '';
@@ -176,10 +176,10 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
     // 22: Ringler S
   }
 
-  print '<pre>';
-  print_r($json);
-  print '</pre>';
-  // return $response->withJson($json);
+  // print '<pre>';
+  // print_r($json);
+  // print '</pre>';
+  return $response->withJson($json);
 
   // array_map(function ($line) {
   //   $match = [];
