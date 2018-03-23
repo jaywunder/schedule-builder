@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import fuzzysearch from 'fuzzysearch'
 import PropTypes from 'prop-types'
-import { coursesSuccess, updateResults } from './state/actions'
+import { coursesSuccess, updateResults, loadQueries, loadSchedule, loadSchedules, addQuery, addSchedule } from './state/actions'
 import { subscribe, unsubscribe } from './util/state'
 import CSV from 'comma-separated-values'
 import csvFile from './assets/courses.csv'
@@ -11,7 +11,9 @@ export default class StateManager extends Component {
     super(...args)
     this.state = {
       queries: {},
-      courses: {},
+      courses: [],
+      schedules: {},
+      scheduleId: null,
     }
 
     this.fetchingCourses = false
@@ -22,13 +24,14 @@ export default class StateManager extends Component {
   componentDidMount() {
     const { store } = this.context
 
+    subscribe(this)('courses', 'schedules')
+    subscribe(this)('scheduleId', this.loadQueries)
+
     const unsubscribeCourses = store.subscribe(() => {
       const state = store.getState()
       if (!state.courses)
         this.fetchCourses()
     })
-
-    subscribe(this)('courses')
 
     this.unsubscribeQueries = store.subscribe(() => {
       const { queries } = store.getState()
@@ -42,13 +45,35 @@ export default class StateManager extends Component {
 
       if (queries !== this.state.queries) {
         this.setState({ queries }, () => {
+          if (Object.keys(queries).length > 0)
+            this.saveSchedule()
+
           differences
             .filter(queryId => queries[queryId].enabled)
             .map(queryId => this.getResults(queryId))
         })
       }
-
     })
+
+    this.unsubscribeSchedules = store.subscribe(() => {
+      const { schedules } = store.getState()
+
+      const differences = []
+      for (let scheduleId in schedules) {
+        if (this.state.schedules[scheduleId] !== schedules[scheduleId]) {
+          differences.push(scheduleId)
+        }
+      }
+
+      if (schedules !== this.state.schedules) {
+        this.setState({ schedules }, () => {
+          if (Object.keys(schedules).length > 0)
+            this.saveSchedules()
+        })
+      }
+    })
+
+    this.loadSchedules()
   }
 
   componentWillUnmount() { unsubscribe(this) }
@@ -102,9 +127,58 @@ export default class StateManager extends Component {
 
     this.context.store.dispatch(coursesSuccess(data))
     this.fetchingCourses = false
+    Object.keys(this.state.queries)
+      .filter(queryId => this.state.queries[queryId].enabled)
+      .map(queryId => this.getResults(queryId))
+  }
+
+  saveSchedule() {
+    localStorage.setItem('schedule-' + this.state.scheduleId, JSON.stringify(this.state.queries))
+  }
+
+  saveSchedules() {
+    localStorage.setItem('schedules', JSON.stringify(this.state.schedules))
+  }
+
+  loadSchedules() {
+    const schedules = JSON.parse(localStorage.getItem('schedules'))
+    const prevScheduleId = localStorage.getItem('scheduleId')
+    const { dispatch } = this.context.store
+
+    if (schedules) {
+      dispatch(loadSchedules(schedules))
+      dispatch(loadSchedule(prevScheduleId))
+    } else {
+      const scheduleId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+      const queryId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+      dispatch(addSchedule(scheduleId))
+      dispatch(addQuery(queryId))
+      dispatch(loadSchedule(scheduleId))
+    }
+  }
+
+  loadQueries() {
+    const { scheduleId } = this.state
+    const { dispatch } = this.context.store
+    const schedule = JSON.parse(localStorage.getItem('schedule-' + scheduleId))
+
+    localStorage.setItem('scheduleId', scheduleId)
+
+    if (schedule) {
+      console.log('LOADING QUERIES BECAUSE THIS ALREADY EXISTS');
+      dispatch(loadQueries(schedule))
+    } else {
+      console.log('loading nothing and adding a query')
+      dispatch(loadQueries({}))
+      dispatch(addQuery())
+    }
   }
 
   getResults(queryId) {
+    if (!this.state.courses.filter)
+      console.log('this.state.courses', this.state.courses)
+    if (!this.state.queries[queryId] || !this.state.courses) return
+
     let search = this.state.queries[queryId].query
 
     if (!this.state.courses || search === '' || !search || search.length < 2)

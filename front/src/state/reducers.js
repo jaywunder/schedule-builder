@@ -4,12 +4,55 @@ export function courses(state = null, action) {
   switch (action.type) {
     case types.COURSES_FETCH:
       return null
-      break;
 
     case types.COURSES_SUCCESS:
       return action.courses
-      break;
   }
+  return state
+}
+
+// this is the current loaded schedule
+export function scheduleId(state = {}, action) {
+
+  switch (action.type) {
+    case types.LOAD_SCHEDULE:
+      // const schedules = JSON.parse(localStorage.getItem('schedules'))
+      // return schedules[scheduleId]
+      return action.scheduleId
+  }
+
+  return state
+}
+
+// this is an object of metadata about schedules, does not contain queries
+export function schedules(state = {}, action) {
+  let nextState = Object.assign({}, state)
+  let ids
+
+  switch (action.type) {
+    case types.ADD_SCHEDULE:
+      console.log('ADDED SCHEDULE')
+      nextState[action.scheduleId] = {
+        id: action.scheduleId,
+        name: action.name
+      }
+
+      // localStorage.setItem('schedules', JSON.stringify(nextState))
+      // localStorage.setItem('schedule-' + action.scheduleId, JSON.stringify({
+      //   queries: {}
+      // }))
+
+      return nextState
+
+    case types.REMOVE_SCHEDULE:
+      delete nextState[action.scheduleId]
+      // localStorage.removeItem(action.scheduleId)
+      return nextState
+
+    case types.LOAD_SCHEDULES:
+      return Object.assign({}, action.schedules)
+  }
+
   return state
 }
 
@@ -27,6 +70,9 @@ export function queries(state = {}, action) {
           disabledSections: [], // fill with course ids
         }
       }, state)
+
+    case types.LOAD_QUERIES:
+      return action.queries
 
     case types.REMOVE_QUERY:
       delete nextState[action.queryId]
@@ -65,7 +111,7 @@ export function queries(state = {}, action) {
       if (!disabledSections.includes(action.section))
         disabledSections.push(action.section)
       else
-        disabledSections.splice(disabledSections.indexOf(action.section))
+        disabledSections.splice(disabledSections.indexOf(action.section), 1)
       return nextState
   }
   return state
@@ -85,6 +131,19 @@ export function results(state = {}, action) {
 
     case types.REMOVE_QUERY:
       delete nextState[action.queryId]
+      return nextState
+
+    case types.LOAD_SCHEDULE:
+      return {}
+
+    case types.LOAD_QUERIES:
+      nextState = {}
+      for (let queryId in action.queries) {
+        nextState[queryId] = {
+          results: [],
+        }
+      }
+
       return nextState
 
     case types.UPDATE_RESULTS:
