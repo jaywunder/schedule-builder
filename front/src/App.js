@@ -2,16 +2,20 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types'
 import BigCalendar from 'react-big-calendar'
 import TimeGrid from 'react-big-calendar/lib/TimeGrid'
+import { DropdownButton, MenuItem } from 'react-bootstrap';
+import Select from 'react-select';
 import moment from 'moment'
 
 import generateSchedule from './algo'
 import tower from './assets/uvm_tower.svg'
 import { subscribe, unsubscribe } from './util/state'
-import { addQuery, toggleQuery, removeQuery, modifyQuery, toggleSection, loadSchedule, addSchedule } from './state/actions'
+import { addQuery, toggleQuery, removeQuery, modifyQuery, toggleSection, loadSchedule, addSchedule, modifyScheduleName } from './state/actions'
 import CourseSearch from './components/CourseSearch'
 import Delete from './components/util/Delete'
+import Dropdown from './components/util/Dropdown'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
+import 'react-select/dist/react-select.css';
 import './App.css';
 
 const colors = [
@@ -36,7 +40,7 @@ class App extends Component {
     this.unsubscribeQueries = subscribe(this)('queries', this.coursesToEvents)
     this.unsubscribeResults = subscribe(this)('results', () => {
       this.coursesToEvents()
-      this.onResultsChange()
+      this.handleResultsChange()
     })
   }
 
@@ -56,7 +60,7 @@ class App extends Component {
         : sum.concat(sugg)
     , []).length === 1
 
-  onResultsChange = () => {
+  handleResultsChange = () => {
     const results = Object.values(this.state.results)
 
     if (results.filter(this.resultsHaveOneCourse).length === results.length && results.length > 0) {
@@ -66,6 +70,10 @@ class App extends Component {
 
   handleCalendarToggle = queryId => section => () => {
     this.context.store.dispatch(toggleSection(queryId, section))
+  }
+
+  handleSheduleTitleChange = event => {
+    this.context.store.dispatch(modifyScheduleName(this.state.scheduleId, event.target.value))
   }
 
   coursesToEvents() {
@@ -110,40 +118,43 @@ class App extends Component {
   render() {
     const events = this.state.events.reduce((sum, arr) => arr ? sum.concat(arr) : sum, [])
 
+    if (!this.state.schedules[this.state.scheduleId]) return null
+
     return (
       <div className="App">
         <div className="header util vertical-center">
           <img className="logo" src={tower}></img>
-          <h1>UVM Schedule Maker</h1>
-          <div>
-            {/* <DropdownButton
-              bsStyle={'title'.toLowerCase()}
-              title={'title'}
-              key={1}
-              id={`dropdown-basic-${1}`}
-            >
-              <MenuItem eventKey="1">Action</MenuItem>
-              <MenuItem eventKey="2">Another action</MenuItem>
-              <MenuItem eventKey="3" active>
-                Active Item
-              </MenuItem>
-              <MenuItem divider />
-              <MenuItem eventKey="4">Separated link</MenuItem>
-            </DropdownButton> */}
-          </div>
-          <div>{
-            Object.values(this.state.schedules).map((elem, i) =>
-              <button
-                key={i}
-                onClick={() => { this.context.store.dispatch(loadSchedule(elem.id)) }}
-              >{elem.id}</button>)
-          }</div>
+          <h1>Fall 2018</h1>
+
+          {/* <Dropdown/> */}
+
+          <input
+            type="text"
+            onChange={this.handleSheduleTitleChange}
+            value={this.state.schedules[this.state.scheduleId].name}
+          ></input>
+          {/* <button
+            onClick={() => this.expanded = !this.expanded}
+          ></button> */}
+          {/* <div style={{width: '200px'}}>
+            <Select
+              name="form-field-name"
+              value={this.state.scheduleId}
+              onChange={next => next
+                  && next.value !== this.state.scheduleId
+                  && this.context.store.dispatch(loadSchedule(next.value))}
+              options={
+                Object.values(this.state.schedules)
+                  .map(schedule => ({ value: schedule.id, label: schedule.name }))
+              }
+            />
+          </div> */}
           <button
             onClick={() => { this.context.store.dispatch(addSchedule()) }}
-            >+</button>
-          <button
+          >+</button>
+          {/* <button
             onClick={() => { localStorage.clear() }}
-            >CLEAR</button>
+            >CLEAR</button> */}
         </div>
         <div className="calendar">
           <BigCalendar

@@ -27,30 +27,28 @@ export function scheduleId(state = {}, action) {
 // this is an object of metadata about schedules, does not contain queries
 export function schedules(state = {}, action) {
   let nextState = Object.assign({}, state)
+  nextState[action.scheduleId] = Object.assign({}, state[action.scheduleId])
   let ids
 
   switch (action.type) {
     case types.ADD_SCHEDULE:
-      console.log('ADDED SCHEDULE')
       nextState[action.scheduleId] = {
         id: action.scheduleId,
         name: action.name
       }
 
-      // localStorage.setItem('schedules', JSON.stringify(nextState))
-      // localStorage.setItem('schedule-' + action.scheduleId, JSON.stringify({
-      //   queries: {}
-      // }))
-
       return nextState
 
     case types.REMOVE_SCHEDULE:
       delete nextState[action.scheduleId]
-      // localStorage.removeItem(action.scheduleId)
       return nextState
 
     case types.LOAD_SCHEDULES:
       return Object.assign({}, action.schedules)
+
+    case types.MODIFY_SCHEDULE_NAME:
+      nextState[action.scheduleId].name = action.name
+      return nextState
   }
 
   return state

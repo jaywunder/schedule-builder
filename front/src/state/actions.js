@@ -80,3 +80,7 @@ export let loadSchedule = (scheduleId) => ({
   type: types.LOAD_SCHEDULE,
   scheduleId
 })
+export let modifyScheduleName = (scheduleId, name) => ({
+  type: types.MODIFY_SCHEDULE_NAME,
+  scheduleId, name
+})
