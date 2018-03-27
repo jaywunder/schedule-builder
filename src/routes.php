@@ -98,9 +98,13 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
 
 
   $courseNumber = preg_match_all(
-    "/(([A-Z]{2,4}) *(\d{3}) *(.*))? *(9\d{4}) *([A-Z]{1,5}) *([A-Z0-9]{1,3}) *(\d\.\d\d).(\d\.\d\d)? *(\d{1,3}) *(\d{1,3}) *(\d{1,3}) *(TBA|\d\d:\d\d) *(TBA|\d\d:\d\d) *(M| )(T| )(W| )(R| )(F| ) *([A-Z]{1,6}) *([A-Za-z0-9 ]{11})([A-Za-z0-9 ]{1,13})/",
+    "/(([A-Z]{2,4}) *(\d{3}) *(.*))? *(9\d{4}) *([A-Z]{1,5}) *([A-Z0-9]{1,3}) *(\d\.\d\d).(\d\.\d\d)? *(\d{1,3}) *(\d{1,3}) *(\d{1,3})(?:\*XL)? *(TBA|\d\d:\d\d) *(TBA|\d\d:\d\d) *(M| )(T| )(W| )(R| )(F| ) *([A-Z]{1,6}) *([A-Za-z0-9 .]{11})([A-Za-z0-9 ]{1,13})/",
     $pre, $matches
   );
+  // $courseNumber = preg_match_all(
+  //   "/(([A-Z]{2,4}) *(\d{3}) *(.*))? *(9\d{4}) *([A-Z]{1,5}) *([A-Z0-9]{1,3}) *(\d\.\d\d).(\d\.\d\d)? *(\d{1,3}) *(\d{1,3}) *(\d{1,3}) *(TBA|\d\d:\d\d) *(TBA|\d\d:\d\d) *(M| )(T| )(W| )(R| )(F| ) *([A-Z]{1,6}) *([A-Za-z0-9 ]{11})([A-Za-z0-9 ]{1,13})/",
+  //   $pre, $matches
+  // );
 
   // print($courseNumber);
 
