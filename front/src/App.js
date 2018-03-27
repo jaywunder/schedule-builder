@@ -126,13 +126,23 @@ class App extends Component {
           <img className="logo" src={tower}></img>
           <h1>Fall 2018</h1>
 
-          {/* <Dropdown/> */}
+          <Dropdown
+            onTitleChange={this.handleSheduleTitleChange}
+            scheduleName={this.state.schedules[this.state.scheduleId].name}
+            schedule={this.state.scheduleId}
+            onScheduleChange={next => next
+              && next.value !== this.state.scheduleId
+              && this.context.store.dispatch(loadSchedule(next.value))}
+            options={Object.values(this.state.schedules)
+              .map(schedule => ({ value: schedule.id, label: schedule.name }))
+            }
+          />
 
-          <input
+          {/* <input
             type="text"
             onChange={this.handleSheduleTitleChange}
             value={this.state.schedules[this.state.scheduleId].name}
-          ></input>
+          ></input> */}
           {/* <button
             onClick={() => this.expanded = !this.expanded}
           ></button> */}
@@ -149,9 +159,9 @@ class App extends Component {
               }
             />
           </div> */}
-          <button
+          {/* <button
             onClick={() => { this.context.store.dispatch(addSchedule()) }}
-          >+</button>
+          >+</button> */}
           {/* <button
             onClick={() => { localStorage.clear() }}
             >CLEAR</button> */}
