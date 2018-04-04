@@ -19,10 +19,16 @@ export default class CourseSearch extends Component {
     super(...args)
 
     const state = this.context.store.getState()
+
+    let results
+    if (state && state.results && state.results[this.props.queryId])
+      results = state.results[this.props.queryId].results
+    else results = []
+
     this.state = Object.assign({
       collapsed: true,
       courses: state.courses,
-      results: state.results[this.props.queryId].results
+      results,
     }, state.queries[this.props.queryId])
   }
 
