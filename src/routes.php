@@ -97,8 +97,12 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
   $matches = [];
 
 
+  // $courseNumber = preg_match_all(
+  //   "/(([A-Z]{2,4}) *(\d{3}) *(.*))? *(9\d{4}) *([A-Z]{1,5}) *([A-Z0-9]{1,3}) *(\d\.\d\d).(\d\.\d\d)? *(\d{1,3}) *(\d{1,3}) *(\d{1,3})(?:\*XL)? *(TBA|\d\d:\d\d) *(TBA|\d\d:\d\d) *(M| )(T| )(W| )(R| )(F| ) *([A-Z]{1,6}) *([A-Za-z0-9 .\/]{11})([A-Za-z0-9 ]{1,13})/",
+  //   $pre, $matches
+  // );
   $courseNumber = preg_match_all(
-    "/(([A-Z]{2,4}) *(\d{3}) *(.*))? *(9\d{4}) *([A-Z]{1,5}) *([A-Z0-9]{1,3}) *(\d\.\d\d).(\d\.\d\d)? *(\d{1,3}) *(\d{1,3}) *(\d{1,3})(?:\*XL)? *(TBA|\d\d:\d\d) *(TBA|\d\d:\d\d) *(M| )(T| )(W| )(R| )(F| ) *([A-Z]{1,6}) *([A-Za-z0-9 .\/]{11})([A-Za-z0-9 ]{1,13})/",
+    "/(?'hastitle'(?'subject'[A-Z]{2,4}) *(?'number'\d{3}) *(?'title'.*))? *(?'courseNumber'9\d{4}) *(?'lecLab'[A-Z]{1,5}) *([A-Z0-9]{1,3}) *(?'creditsLow'\d\.\d\d).(?'creditsHigh'\d\.\d\d)? *(?'maxEnroll'\d{1,3}) *(?'currentEnroll'\d{1,3}) *(?'remaining'\d{1,3})(?:\*XL)? *(?'startTime'TBA|\d\d:\d\d) *(?'endTime'TBA|\d\d:\d\d) *(?'M'M| )(?'T'T| )(?'W'W| )(?'R'R| )(?'F'F| ) *(?'building'[A-Z]{1,6}) *(?'room'[A-Za-z0-9 .\/]{11})(?'instructor'[A-Za-z0-9 ]{1,13})/",
     $pre, $matches
   );
   // $courseNumber = preg_match_all(
