@@ -102,7 +102,7 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
   //   $pre, $matches
   // );
   $courseNumber = preg_match_all(
-    "/(?'hastitle'(?'subject'[A-Z]{2,4}) *(?'number'\d{3}) *(?'title'.*))? *(?'courseNumber'9\d{4}) *(?'lecLab'[A-Z]{1,5}) *([A-Z0-9]{1,3}) *(?'creditsMin'\d\.\d\d).(?'creditsMax'\d\.\d\d)? *(?'maxEnroll'\d{1,3}) *(?'currentEnroll'\d{1,3}) *(?'remaining'\d{1,3})(?:\*XL)? *(?'startTime'TBA|\d\d:\d\d) *(?'endTime'TBA|\d\d:\d\d) *(?'M'M| )(?'T'T| )(?'W'W| )(?'R'R| )(?'F'F| ) *(?'building'[A-Z]{1,6}) *(?'room'[A-Za-z0-9 .\/]{11})(?'instructor'[A-Za-z0-9 ]{1,13})/",
+    "/(?'hastitle'(?'subject'[A-Z]{2,4}) *(?'number'\d{3}) *(?'title'.*))? *(?'courseNumber'9\d{4}) *(?'lecLab'[A-Z]{1,5}) *(?'section'[A-Z0-9]{1,3}) *(?'creditsMin'\d\.\d\d).(?'creditsMax'\d\.\d\d)? *(?'maxEnroll'\d{1,3}) *(?'currentEnroll'\d{1,3}) *(?'remaining'\d{1,3})(?:\*XL)? *(?'startTime'TBA|\d\d:\d\d) *(?'endTime'TBA|\d\d:\d\d) *(?'M'M| )(?'T'T| )(?'W'W| )(?'R'R| )(?'F'F| ) *(?'building'[A-Z]{1,6}) *(?'room'[A-Za-z0-9 .\/]{11})(?'instructor'[A-Za-z0-9 ]{1,13})/",
     $pre, $matches
   );
   // $courseNumber = preg_match_all(
@@ -119,13 +119,13 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
   for ($i = 0; $i < $courseNumber; $i++) {
 
     if ($matches['subject'][$i] !== '') {
-      $currentSubject = $matches[2][$i];
+      $currentSubject = $matches['subject'][$i];
     }
     if ($matches['number'][$i] !== '') {
-      $currentNumber = $matches[3][$i];
+      $currentNumber = $matches['number'][$i];
     }
     if ($matches['title'][$i] !== '') {
-      $currentTitle = $matches[4][$i];
+      $currentTitle = $matches['title'][$i];
     }
 
     $startTime = $matches['startTime'][$i] . '';
