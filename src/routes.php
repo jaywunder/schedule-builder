@@ -96,27 +96,23 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
   ];
   $matches = [];
 
-
   // $courseNumber = preg_match_all(
-  //   "/(([A-Z]{2,4}) *(\d{3}) *(.*))? *(9\d{4}) *([A-Z]{1,5}) *([A-Z0-9]{1,3}) *(\d\.\d\d).(\d\.\d\d)? *(\d{1,3}) *(\d{1,3}) *(\d{1,3})(?:\*XL)? *(TBA|\d\d:\d\d) *(TBA|\d\d:\d\d) *(M| )(T| )(W| )(R| )(F| ) *([A-Z]{1,6}) *([A-Za-z0-9 .\/]{11})([A-Za-z0-9 ]{1,13})/",
+  //   "/(?'hastitle'(?'subject'[A-Z]{2,4}) *(?'number'\d{3}) *(?'title'.*))? *(?'courseNumber'9\d{4}) *(?'lecLab'[A-Z]{1,5}) *(?'section'[A-Z0-9]{1,3}) *(?'creditsMin'\d\.\d\d).(?'creditsMax'\d\.\d\d)? *(?'maxEnroll'\d{1,3}) *(?'currentEnroll'\d{1,3}) *(?'remaining'\d{1,3})(?:\*XL)? *(?'startTime'TBA|\d\d:\d\d) *(?'endTime'TBA|\d\d:\d\d) *(?'M'M| )(?'T'T| )(?'W'W| )(?'R'R| )(?'F'F| ) *(?'building'[A-Z]{1,6}) *(?'room'[A-Za-z0-9 .\/]{11})(?'instructor'[A-Za-z0-9 ]{1,13})/",
   //   $pre, $matches
   // );
   $courseNumber = preg_match_all(
-    "/(?'hastitle'(?'subject'[A-Z]{2,4}) *(?'number'\d{3}) *(?'title'.*))? *(?'courseNumber'9\d{4}) *(?'lecLab'[A-Z]{1,5}) *(?'section'[A-Z0-9]{1,3}) *(?'creditsMin'\d\.\d\d).(?'creditsMax'\d\.\d\d)? *(?'maxEnroll'\d{1,3}) *(?'currentEnroll'\d{1,3}) *(?'remaining'\d{1,3})(?:\*XL)? *(?'startTime'TBA|\d\d:\d\d) *(?'endTime'TBA|\d\d:\d\d) *(?'M'M| )(?'T'T| )(?'W'W| )(?'R'R| )(?'F'F| ) *(?'building'[A-Z]{1,6}) *(?'room'[A-Za-z0-9 .\/]{11})(?'instructor'[A-Za-z0-9 ]{1,13})/",
+    "/(?'hasfull'(?'hastitle'(?'subject'[A-Z]{2,4}) *(?'number'\d{3}) *(?'title'.*))? *(?'courseNumber'9\d{4}) *(?'lecLab'[A-Z]{1,5}) *(?'section'[A-Z0-9]{1,3}) *(?'creditsMin'\d\.\d\d).(?'creditsMax'\d\.\d\d)? *(?'maxEnroll'\d{1,3}) *(?'currentEnroll'\d{1,3}) *(?'remaining'\d{1,3})(?:\*XL)? *(?'startTime'TBA|\d\d:\d\d) *(?'endTime'TBA|\d\d:\d\d) *(?'M'M| )(?'T'T| )(?'W'W| )(?'R'R| )(?'F'F| ) *(?'building'[A-Z]{1,6}) *(?'room'[A-Za-z0-9 .\/]{11})(?'instructor'[A-Za-z0-9 ]{1,13}))|(?'justsome'(?'startTime2'TBA|\d\d:\d\d) *(?'endTime2'TBA|\d\d:\d\d) *(?'M2'M| )(?'T2'T| )(?'W2'W| )(?'R2'R| )(?'F2'F| ) *(?'building2'[A-Z]{1,6}) *(?'room2'[A-Za-z0-9 .\/]{11}))/",
     $pre, $matches
   );
-  // $courseNumber = preg_match_all(
-  //   "/(([A-Z]{2,4}) *(\d{3}) *(.*))? *(9\d{4}) *([A-Z]{1,5}) *([A-Z0-9]{1,3}) *(\d\.\d\d).(\d\.\d\d)? *(\d{1,3}) *(\d{1,3}) *(\d{1,3}) *(TBA|\d\d:\d\d) *(TBA|\d\d:\d\d) *(M| )(T| )(W| )(R| )(F| ) *([A-Z]{1,6}) *([A-Za-z0-9 ]{11})([A-Za-z0-9 ]{1,13})/",
-  //   $pre, $matches
-  // );
-
-  // print($courseNumber);
 
   $json = [];
   $currentSubject = '';
   $currentNumber = '';
   $currentTitle = '';
+  $lastFull = -1;
   for ($i = 0; $i < $courseNumber; $i++) {
+
+    if ($matches['hasfull'][$i] !== '') { $lastFull = $i; }
 
     if ($matches['subject'][$i] !== '') {
       $currentSubject = $matches['subject'][$i];
@@ -139,24 +135,27 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
       $endTime = strval(intval(substr($endTime, 0, 2)) + 12) . substr($matches['endTime'][$i], 2);
     }
 
+    $j = $i;
+    if ($lastFull !== $i) $j = $lastFull;
+
     $json[] = [
       'subject' => $currentSubject,
       'number' => $currentNumber,
       'title' => $currentTitle,
-      'courseNumber' => $matches['courseNumber'][$i],
-      'section' => $matches['section'][$i],
-      'lecLab' => $matches['lecLab'][$i],
+      'courseNumber' => $matches['courseNumber'][$lastFull],
+      'section' => $matches['section'][$lastFull],
+      'lecLab' => $matches['lecLab'][$lastFull],
       'campcode' => '',
       'collcode' => '',
-      'maxEnroll' => $matches['maxEnroll'][$i],
-      'currentEnroll' => $matches['currentEnroll'][$i],
+      'maxEnroll' => $matches['maxEnroll'][$lastFull],
+      'currentEnroll' => $matches['currentEnroll'][$lastFull],
       'startTime' => $startTime,
       'endTime' => $endTime,
-      'days' => $matches['M'][$i] . $matches['T'][$i] . $matches['W'][$i] . $matches['R'][$i] . $matches['F'][$i],
-      'credits' => $matches['creditsMin'][$i],
-      'building' => $matches['building'][$i],
-      'room' => $matches['room'][$i],
-      'instructor' => $matches['instructor'][$i],
+      'days' => $matches['M'][$j] . $matches['T'][$j] . $matches['W'][$j] . $matches['R'][$j] . $matches['F'][$j],
+      'credits' => $matches['creditsMin'][$lastFull],
+      'building' => $matches['building'][$j],
+      'room' => $matches['room'][$j],
+      'instructor' => $matches['instructor'][$lastFull],
       'netId' => '',
       'email' => ''
     ];
