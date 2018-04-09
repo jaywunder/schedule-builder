@@ -140,6 +140,7 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
 
     if (intval(substr($startTime, 0, 2)) < 8) {
       $startTime = strval(intval(substr($startTime, 0, 2)) + 12) . substr($startTime, 2);
+      $endTime = strval(intval(substr($endTime, 0, 2)) + 12) . substr($endTime, 2);
     }
 
     if (intval(substr($endTime, 0, 2)) < 8) {
