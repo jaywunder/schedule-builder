@@ -126,6 +126,17 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
 
     $startTime = $matches['startTime'][$i] . '';
     $endTime = $matches['endTime'][$i] . '';
+    $days = $matches['M'][$i] . $matches['T'][$i] . $matches['W'][$i] . $matches['R'][$i] . $matches['F'][$i];
+    $building = $matches['building'][$i];
+    $room = $matches['room'][$i];
+
+    if ($lastFull !== $i) {
+      $startTime = $matches['startTime2'][$i] . '';
+      $endTime = $matches['endTime2'][$i] . '';
+      $days = $matches['M2'][$i] . $matches['T2'][$i] . $matches['W2'][$i] . $matches['R2'][$i] . $matches['F2'][$i];
+      $building = $matches['building2'][$i];
+      $room = $matches['room2'][$i];
+    }
 
     if (intval(substr($matches['startTime'][$i], 0, 2)) < 8) {
       $startTime = strval(intval(substr($startTime, 0, 2)) + 12) . substr($matches['startTime'][$i], 2);
@@ -134,9 +145,6 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
     if (intval(substr($matches['endTime'][$i], 0, 2)) < 8) {
       $endTime = strval(intval(substr($endTime, 0, 2)) + 12) . substr($matches['endTime'][$i], 2);
     }
-
-    $j = $i;
-    if ($lastFull !== $i) $j = $lastFull;
 
     $json[] = [
       'subject' => $currentSubject,
@@ -151,10 +159,10 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
       'currentEnroll' => $matches['currentEnroll'][$lastFull],
       'startTime' => $startTime,
       'endTime' => $endTime,
-      'days' => $matches['M'][$j] . $matches['T'][$j] . $matches['W'][$j] . $matches['R'][$j] . $matches['F'][$j],
+      'days' => $days,
       'credits' => $matches['creditsMin'][$lastFull],
-      'building' => $matches['building'][$j],
-      'room' => $matches['room'][$j],
+      'building' => $building,
+      'room' => $room,
       'instructor' => $matches['instructor'][$lastFull],
       'netId' => '',
       'email' => ''
