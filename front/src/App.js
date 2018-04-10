@@ -2,16 +2,20 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types'
 import BigCalendar from 'react-big-calendar'
 import TimeGrid from 'react-big-calendar/lib/TimeGrid'
+import { DropdownButton, MenuItem } from 'react-bootstrap';
+import Select from 'react-select';
 import moment from 'moment'
 
 import generateSchedule from './algo'
 import tower from './assets/uvm_tower.svg'
 import { subscribe, unsubscribe } from './util/state'
-import { addQuery, toggleQuery, removeQuery, modifyQuery, toggleSection } from './state/actions'
+import { addQuery, toggleQuery, removeQuery, modifyQuery, toggleSection, loadSchedule, addSchedule, modifyScheduleName } from './state/actions'
 import CourseSearch from './components/CourseSearch'
 import Delete from './components/util/Delete'
+import Dropdown from './components/util/Dropdown'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
+import 'react-select/dist/react-select.css';
 import './App.css';
 
 const colors = [
@@ -24,19 +28,19 @@ class App extends Component {
     this.state = {
       courses: state.courses,
       queries: state.queries,
+      schedules: state.schedules,
+      scheduleId: state.scheduleId,
       results: [],
       events: [],
     }
-
-    this.addQuery()
   }
 
   componentDidMount() {
-    this.unsubscribeStore = subscribe(this)('courses')
+    this.unsubscribeStore = subscribe(this)('courses', 'scheduleId', 'schedules')
     this.unsubscribeQueries = subscribe(this)('queries', this.coursesToEvents)
     this.unsubscribeResults = subscribe(this)('results', () => {
       this.coursesToEvents()
-      this.onResultsChange()
+      this.handleResultsChange()
     })
   }
 
@@ -56,9 +60,10 @@ class App extends Component {
         : sum.concat(sugg)
     , []).length === 1
 
-  onResultsChange = () => {
+  handleResultsChange = () => {
     const results = Object.values(this.state.results)
-    if (results.filter(this.resultsHaveOneCourse).length === results.length) {
+
+    if (results.filter(this.resultsHaveOneCourse).length === results.length && results.length > 0) {
       this.addQuery()
     }
   }
@@ -67,13 +72,18 @@ class App extends Component {
     this.context.store.dispatch(toggleSection(queryId, section))
   }
 
+  handleSheduleTitleChange = event => {
+    this.context.store.dispatch(modifyScheduleName(this.state.scheduleId, event.target.value))
+  }
+
   coursesToEvents() {
+    const { queries } = this.state
     const courses = Object.entries(this.state.results)
-      .filter(([queryId, results]) => this.state.queries[queryId].enabled)
+      .filter(([queryId, results]) => queries[queryId].enabled)
       .filter(([queryId, results]) => this.resultsHaveOneCourse(results))
       .map(([queryId, results]) => results.results.map(result => Object.assign({}, result, { queryId })))
       .reduce((sum, elem) => sum.concat(elem), [])
-      .filter(result => !this.state.queries[result.queryId].disabledSections.includes(result.section))
+      .filter(result => !queries[result.queryId].disabledSections.includes(result.section))
 
     const baseTime = moment().startOf('week')
     const days = { M: 1, T: 2, W: 3, R: 4, F: 5, S: 6 }
@@ -90,8 +100,6 @@ class App extends Component {
         const start = course.startTime.split(':').map(n => parseInt(n))
         const end = course.endTime.split(':').map(n => parseInt(n))
         const number = (course.subject + course.number).split('').reduce((sum, char) => sum + char.charCodeAt(0), 0)
-        console.log('number', number)
-
 
         events.push({
           queryId: course.queryId,
@@ -110,13 +118,53 @@ class App extends Component {
   render() {
     const events = this.state.events.reduce((sum, arr) => arr ? sum.concat(arr) : sum, [])
 
+    if (!this.state.schedules[this.state.scheduleId]) return null
+
     return (
       <div className="App">
         <div className="header util vertical-center">
           <img className="logo" src={tower}></img>
-          <h1>UVM Schedule Maker</h1>
-          {/* <div>change schedule dropdown here</div>
-          <div>other toolbars here</div> */}
+          <h1>Fall 2018</h1>
+
+          <Dropdown
+            onTitleChange={this.handleSheduleTitleChange}
+            scheduleName={this.state.schedules[this.state.scheduleId].name}
+            schedule={this.state.scheduleId}
+            onScheduleChange={next => next
+              && next.value !== this.state.scheduleId
+              && this.context.store.dispatch(loadSchedule(next.value))}
+            options={Object.values(this.state.schedules)
+              .map(schedule => ({ value: schedule.id, label: schedule.name }))
+            }
+          />
+
+          {/* <input
+            type="text"
+            onChange={this.handleSheduleTitleChange}
+            value={this.state.schedules[this.state.scheduleId].name}
+          ></input> */}
+          {/* <button
+            onClick={() => this.expanded = !this.expanded}
+          ></button> */}
+          {/* <div style={{width: '200px'}}>
+            <Select
+              name="form-field-name"
+              value={this.state.scheduleId}
+              onChange={next => next
+                  && next.value !== this.state.scheduleId
+                  && this.context.store.dispatch(loadSchedule(next.value))}
+              options={
+                Object.values(this.state.schedules)
+                  .map(schedule => ({ value: schedule.id, label: schedule.name }))
+              }
+            />
+          </div> */}
+          {/* <button
+            onClick={() => { this.context.store.dispatch(addSchedule()) }}
+          >+</button> */}
+          {/* <button
+            onClick={() => { localStorage.clear() }}
+            >CLEAR</button> */}
         </div>
         <div className="calendar">
           <BigCalendar
