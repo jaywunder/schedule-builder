@@ -202,6 +202,14 @@ export default class StateManager extends Component {
       results = courses.filter(course => fuzzysearch(search, course.title.toLowerCase()))
     else results = []
 
+    results = results.filter((course, i) =>
+      results.findIndex(other =>
+        course.subjNumSec === other.subjNumSec &&
+        course.startTime === other.startTime &&
+        course.endTime === other.endTime
+      ) === i
+    )
+
     this.context.store.dispatch(updateResults(queryId, results))
   }
 
