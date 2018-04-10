@@ -122,7 +122,7 @@ class App extends Component {
           <BigCalendar
             min={moment().hour(8).minute(0).second(0).toDate()}
             max={moment().hour(21).minute(0).second(0).toDate()}
-            view="work_week"
+            view="week"
             onView={()=>{}}
             toolbar={false}
             events={events}
