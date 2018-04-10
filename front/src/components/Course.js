@@ -13,11 +13,11 @@ export default ({ course, showSection }) => {
     { showSection && <span>Section {course.section} &nbsp; ({course.courseNumber}) </span>}
     <br/>
     <div className="indent">
-      { course.startTime }-{ course.endTime } &nbsp; { course.days }<br/>
-      { seats } seat{seats !== 1 && 's'} left<br/>
-      { course.credits } credit{ course.credits !== 1 && 's' }<br/>
-      { course.building }<br/>
-      { instructor }
+      { course.startTime } – { course.endTime } &nbsp; { course.days }<br/>
+      {/* { seats } seat{seats !== 1 && 's'} left<br/> */}
+      {/* { course.credits } credit{ course.credits !== 1 && 's' }<br/> */}
+      {/* { course.building }<br/> */}
+      {/* { instructor } */}
     </div>
   </div>
 }

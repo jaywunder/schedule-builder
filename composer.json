@@ -17,7 +17,8 @@
     "slim/php-view": "^2.0",
     "monolog/monolog": "^1.17",
     "illuminate/database": "~5.1",
-    "ralouphie/mimey": "^1.0"
+    "ralouphie/mimey": "^1.0",
+    "fabpot/goutte": "^3.2"
   },
   "require-dev": {
     "phpunit/phpunit": ">=4.8 < 6.0"
@@ -25,7 +26,8 @@
   "autoload": {
     "psr-4": {
       "Models\\": "src/models/",
-      "Routes\\": "src/routes/"
+      "Routes\\": "src/routes/",
+      "School\\": "src/school/"
     }
   },
   "autoload-dev": {
