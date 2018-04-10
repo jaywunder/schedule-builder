@@ -1,0 +1,44 @@
+.Dropdown {
+  /* width: 100%; */
+  margin: 2em;
+  font-size: .9em;
+  padding: .5em;
+  border-radius: .2em;
+  border: 1px solid grey;
+  background: white;
+}
+
+.Dropdown input {
+  font-size: 1em;
+  background: none;
+  border: none;
+}
+
+.Dropdown button {
+  border: none;
+  background: none;
+  font-size: 1em;
+}
+
+.Dropdown .relative {
+  width: 100%;
+  z-index: 999;
+  position: relative;
+}
+
+.Dropdown .absolute {
+  width: 100%;
+  z-index: 999;
+  position: absolute;
+  background: white;
+  color: black;
+  padding-left: .5em;
+  padding-right: .5em;
+  left: calc(-.5em - 1px);
+  border-left: 1px solid grey;
+  border-right: 1px solid grey;
+  border-bottom: 1px solid grey;
+  border-top: none;
+}
+
+.Dropdown .absolute-collapse {}
