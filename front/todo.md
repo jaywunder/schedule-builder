@@ -1,8 +1,8 @@
- - [ ] multiple schedules
+ - [ ] x's on classes on the calendar (SINGLE CLICK)
  - [ ] serializable schedules -> use queries
  - [ ] be able to create/change class sections
  - [ ] summary of what sections have been created or changed
-
+ - [ ] make global disable actually just uncheck all the boxes
 
 toggling a section is messed up
 
@@ -14,4 +14,4 @@ focus dropdown title
 
 don't show current schedule in dropdown
 
-highlight 
+highlight
