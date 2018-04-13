@@ -158,11 +158,15 @@ export default class StateManager extends Component {
   }
 
   loadQueries() {
-    const { scheduleId } = this.state
+    const { scheduleId, schedules } = this.state
+    if (!schedules[scheduleId]) return
+
     const { dispatch } = this.context.store
     const schedule = JSON.parse(localStorage.getItem('schedule-' + scheduleId))
 
     localStorage.setItem('scheduleId', scheduleId)
+
+    if (!!schedules[scheduleId].duplicate) return
 
     if (schedule) {
       console.log('LOADING QUERIES BECAUSE THIS ALREADY EXISTS');
@@ -201,6 +205,14 @@ export default class StateManager extends Component {
     else if (isTitle)
       results = courses.filter(course => fuzzysearch(search, course.title.toLowerCase()))
     else results = []
+
+    results = results.filter((course, i) =>
+      results.findIndex(other =>
+        course.subjNumSec === other.subjNumSec &&
+        course.startTime === other.startTime &&
+        course.endTime === other.endTime
+      ) === i
+    )
 
     this.context.store.dispatch(updateResults(queryId, results))
   }

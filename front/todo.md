@@ -1,17 +1,5 @@
- - [ ] x's on classes on the calendar (SINGLE CLICK)
- - [ ] serializable schedules -> use queries
+ - [ ] x's on classes on the calendar
  - [ ] be able to create/change class sections
- - [ ] summary of what sections have been created or changed
  - [ ] make global disable actually just uncheck all the boxes
-
-toggling a section is messed up
-
-XL means cross listed in remaining seats "\*XL"
-
-figure out how to find the correct year/semester/etc
-
-focus dropdown title
-
-don't show current schedule in dropdown
-
-highlight
+ - [ ] figure out how to find the correct year/semester/etc
+ - [ ] typing in the middle of a text box is bad

@@ -24,12 +24,13 @@
 
 .CourseSearch .search-wrapper {
   margin: 0 auto;
-  width: 90%;
+  display: flex;
+  flex-direction: row
 }
 
 .CourseSearch .search-input {
-  width: 100%;
-  margin: auto;
+  flex: 1;
+  margin: 0 auto;
   font-size: .9em;
   padding: .5em;
   border-radius: .2em;
@@ -37,7 +38,7 @@
 }
 
 .CourseSearch .arrow-down {
-  width: 98%;
+  /* width: 98%; */
   text-align: center;
   border-bottom-right-radius: .5em;
   border-bottom-left-radius: .5em;

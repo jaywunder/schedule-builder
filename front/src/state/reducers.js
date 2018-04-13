@@ -11,14 +11,15 @@ export function courses(state = null, action) {
   return state
 }
 
-// this is the current loaded schedule
+// this is the id of  current loaded schedule
 export function scheduleId(state = {}, action) {
 
   switch (action.type) {
     case types.LOAD_SCHEDULE:
-      // const schedules = JSON.parse(localStorage.getItem('schedules'))
-      // return schedules[scheduleId]
       return action.scheduleId
+
+    case types.DUPLICATE_SCHEDULE:
+      return action.nextId
   }
 
   return state
@@ -34,7 +35,18 @@ export function schedules(state = {}, action) {
     case types.ADD_SCHEDULE:
       nextState[action.scheduleId] = {
         id: action.scheduleId,
-        name: action.name
+        name: action.name,
+        duplicate: null,
+      }
+
+      return nextState
+
+    case types.DUPLICATE_SCHEDULE:
+      let { name } = nextState[action.scheduleId]
+      nextState[action.nextId] = {
+        id: action.nextId,
+        name: name + ' copy',
+        duplicate: action.scheduleId,
       }
 
       return nextState
@@ -57,7 +69,9 @@ export function schedules(state = {}, action) {
 export function queries(state = {}, action) {
   let disabledSections
   let nextState = Object.assign({}, state)
-  nextState[action.queryId] = Object.assign({}, state[action.queryId])
+  console.log('nextState', nextState)
+  console.log('state', state)
+  nextState[action.queryId] = Object.assign({}, (state || {})[action.queryId])
 
   switch (action.type) {
     case types.ADD_QUERY:
@@ -68,6 +82,19 @@ export function queries(state = {}, action) {
           disabledSections: [], // fill with course ids
         }
       }, state)
+
+    case types.DUPLICATE_SCHEDULE:
+      const duplicate = {}
+      Object.values(state)
+        .map(query => [query, Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)])
+        .forEach(([query, id]) => duplicate[id] = Object.assign({}, query))
+      return duplicate
+
+      // nextState = Object.assign({}, state)
+      // Object.keys(nextState).forEach(key => nextState[key] = Object.assign({}, nextState[key]))
+      //
+      // return nextState
+
 
     case types.LOAD_QUERIES:
       return action.queries
@@ -131,6 +158,7 @@ export function results(state = {}, action) {
       delete nextState[action.queryId]
       return nextState
 
+    case types.DUPLICATE_SCHEDULE:
     case types.LOAD_SCHEDULE:
       return {}
 

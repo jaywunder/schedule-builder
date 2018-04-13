@@ -79,6 +79,7 @@ class App extends Component {
   coursesToEvents() {
     const { queries } = this.state
     const courses = Object.entries(this.state.results)
+      .filter(([queryId, results]) => !!queries[queryId])
       .filter(([queryId, results]) => queries[queryId].enabled)
       .filter(([queryId, results]) => this.resultsHaveOneCourse(results))
       .map(([queryId, results]) => results.results.map(result => Object.assign({}, result, { queryId })))
@@ -92,7 +93,6 @@ class App extends Component {
     let prevSubjNum = ''
 
     for (let course of courses) {
-
       for (let day of course.days) {
         if (day === ' ') continue
 
@@ -129,7 +129,7 @@ class App extends Component {
           <Dropdown
             onTitleChange={this.handleSheduleTitleChange}
             scheduleName={this.state.schedules[this.state.scheduleId].name}
-            schedule={this.state.scheduleId}
+            scheduleId={this.state.scheduleId}
             onScheduleChange={next => next
               && next.value !== this.state.scheduleId
               && this.context.store.dispatch(loadSchedule(next.value))}
@@ -137,41 +137,12 @@ class App extends Component {
               .map(schedule => ({ value: schedule.id, label: schedule.name }))
             }
           />
-
-          {/* <input
-            type="text"
-            onChange={this.handleSheduleTitleChange}
-            value={this.state.schedules[this.state.scheduleId].name}
-          ></input> */}
-          {/* <button
-            onClick={() => this.expanded = !this.expanded}
-          ></button> */}
-          {/* <div style={{width: '200px'}}>
-            <Select
-              name="form-field-name"
-              value={this.state.scheduleId}
-              onChange={next => next
-                  && next.value !== this.state.scheduleId
-                  && this.context.store.dispatch(loadSchedule(next.value))}
-              options={
-                Object.values(this.state.schedules)
-                  .map(schedule => ({ value: schedule.id, label: schedule.name }))
-              }
-            />
-          </div> */}
-          {/* <button
-            onClick={() => { this.context.store.dispatch(addSchedule()) }}
-          >+</button> */}
-          {/* <button
-            onClick={() => { localStorage.clear() }}
-            >CLEAR</button> */}
         </div>
         <div className="calendar">
           <BigCalendar
             min={moment().hour(8).minute(0).second(0).toDate()}
             max={moment().hour(21).minute(0).second(0).toDate()}
-            view="week"
-            onView={()=>{}}
+            defaultView="week"
             toolbar={false}
             events={events}
             eventPropGetter={event => ({
@@ -183,7 +154,12 @@ class App extends Component {
               eventTimeRangeFormat() { return '' },
             }}
             components={{
-              event: ({ event }) => <span><Delete onDelete={this.handleCalendarToggle(event.queryId)(event.section)}/>{event.title}</span>
+              event: ({ event }) => <span>
+                <Delete singleClick={true}
+                  onDelete={this.handleCalendarToggle(event.queryId)(event.section)}
+                />
+                {event.title}
+              </span>
             }}
           />
         </div>
