@@ -158,11 +158,15 @@ export default class StateManager extends Component {
   }
 
   loadQueries() {
-    const { scheduleId } = this.state
+    const { scheduleId, schedules } = this.state
+    if (!schedules[scheduleId]) return
+
     const { dispatch } = this.context.store
     const schedule = JSON.parse(localStorage.getItem('schedule-' + scheduleId))
 
     localStorage.setItem('scheduleId', scheduleId)
+
+    if (!!schedules[scheduleId].duplicate) return
 
     if (schedule) {
       console.log('LOADING QUERIES BECAUSE THIS ALREADY EXISTS');

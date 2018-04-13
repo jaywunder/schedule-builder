@@ -113,6 +113,7 @@ export default class CourseSearch extends Component {
       { !hasOneCourse && <div>
         <div className="search-wrapper">
           <input
+            ref='textInput'
             value={this.state.query}
             className="search-input"
             onChange={ this.onQueryChange }

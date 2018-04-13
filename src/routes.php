@@ -62,47 +62,12 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
     return $node->text();
   });
   $pre = $preArray[0];
-  // print 'length: ' . count($pre_array) . '<br>';
-  // print '<pre>' . $pre . '</pre>';
 
-  /*
-
-  ([A-Z]{2,4}) *(\d{3}) *(.*) *(9\d{4}) *
-  ([A-Z]{2,4}) *(\d{3}) *(.*) *(9\d{4}) *([A-Z]{1,5}) *([A-Z0-9]{1,3}) *(\d\.\d\d)
-  ([A-Z]{2,4}) *(\d{3}) *(.*) *(9\d{4}) *([A-Z]{1,5}) *([A-Z0-9]{1,3}) *(\d\.\d\d).(\d\.\d\d)? *(\d{1,3}) *(\d{1,3}) *(\d{1,3}) *(TBA|\d\d:\d\d) *(TBA|\d\d:\d\d) *
-  ([A-Z]{2,4}) *(\d{3}) *(.*) *(9\d{4}) *([A-Z]{1,5}) *([A-Z0-9]{1,3}) *(\d\.\d\d).(\d\.\d\d)? *(\d{1,3}) *(\d{1,3}) *(\d{1,3}) *(TBA|\d\d:\d\d) *(TBA|\d\d:\d\d) *(M| )(T| )(W| )(R| )(F| ) *([A-Z]{1,6}) *([A-Z0-9]{1,11}) *
-  ([A-Z]{2,4}) *(\d{3}) *(.*) *(9\d{4}) *([A-Z]{1,5}) *([A-Z0-9]{1,3}) *(\d\.\d\d).(\d\.\d\d)? *(\d{1,3}) *(\d{1,3}) *(\d{1,3}) *(TBA|\d\d:\d\d) *(TBA|\d\d:\d\d) *(M| )(T| )(W| )(R| )(F| ) *([A-Z]{1,6}) *([A-Z0-9 ]{11})([A-Za-z0-9 ]{1,13})
-  */
-
-
-  $headers = [
-    'subject',
-    'number',
-    'title',
-    'courseNumber',
-    'section',
-    'lecLab',
-    'campcode',
-    'collcode',
-    'maxEnroll',
-    'currentEnroll',
-    'startTime',
-    'endTime',
-    'M', 'T', 'W', 'R', 'F',
-    'credits',
-    'building',
-    'room',
-    'instructor'
-  ];
   $matches = [];
 
-  // $courseNumber = preg_match_all(
-  //   "/(?'hastitle'(?'subject'[A-Z]{2,4}) *(?'number'\d{3}) *(?'title'.*))? *(?'courseNumber'9\d{4}) *(?'lecLab'[A-Z]{1,5}) *(?'section'[A-Z0-9]{1,3}) *(?'creditsMin'\d\.\d\d).(?'creditsMax'\d\.\d\d)? *(?'maxEnroll'\d{1,3}) *(?'currentEnroll'\d{1,3}) *(?'remaining'\d{1,3})(?:\*XL)? *(?'startTime'TBA|\d\d:\d\d) *(?'endTime'TBA|\d\d:\d\d) *(?'M'M| )(?'T'T| )(?'W'W| )(?'R'R| )(?'F'F| ) *(?'building'[A-Z]{1,6}) *(?'room'[A-Za-z0-9 .\/]{11})(?'instructor'[A-Za-z0-9 ]{1,13})/",
-  //   $pre, $matches
-  // );
   $courseNumber = preg_match_all(
     "/(?'hasfull'(?'hastitle'(?'subject'[A-Z]{2,4}) *(?'number'\d{3}) *(?'title'.*))? *(?'courseNumber'9\d{4}) *(?'lecLab'[A-Z]{1,5}) *(?'section'[A-Z0-9]{1,3}) *(?'creditsMin'\d\.\d\d).(?'creditsMax'\d\.\d\d)? *(?'maxEnroll'\d{1,3}) *(?'currentEnroll'\d{1,3}) *(?'remaining'\d{1,3})(?:\*XL)? *(?'startTime'TBA|\d\d:\d\d) *(?'endTime'TBA|\d\d:\d\d) *(?'M'M| )(?'T'T| )(?'W'W| )(?'R'R| )(?'F'F| ) *(?'building'[A-Z]{1,6}) *(?'room'[A-Za-z0-9 .\/]{11})(?'instructor'[A-Za-z0-9 ]{1,13}))|(?'justsome'(?'startTime2'TBA|\d\d:\d\d) *(?'endTime2'TBA|\d\d:\d\d) *(?'M2'M| )(?'T2'T| )(?'W2'W| )(?'R2'R| )(?'F2'F| ) *(?'building2'[A-Z]{1,6}) *(?'room2'[A-Za-z0-9 .\/]{11}))/",
-    $pre, $matches
+    $pre, $matchess
   );
 
   $json = [];
@@ -146,13 +111,6 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
     if (intval(substr($endTime, 0, 2)) < 8) {
       $endTime = strval(intval(substr($endTime, 0, 2)) + 12) . substr($endTime, 2);
     }
-    // if (intval(substr($matches['startTime'][$i], 0, 2)) < 8) {
-    //   $startTime = strval(intval(substr($startTime, 0, 2)) + 12) . substr($matches['startTime'][$i], 2);
-    // }
-    //
-    // if (intval(substr($matches['endTime'][$i], 0, 2)) < 8) {
-    //   $endTime = strval(intval(substr($endTime, 0, 2)) + 12) . substr($matches['endTime'][$i], 2);
-    // }
 
     $json[] = [
       'subject' => $currentSubject,
@@ -175,67 +133,7 @@ $app->get(ROOT . '/api/scrape', function (Request $request, Response $response, 
       'netId' => '',
       'email' => ''
     ];
-
-    // 2: AS
-    // 3: 095
-    // 4: Foundations of Learning
-    // 5: 95221
-    // 6: LEC
-    // 7: B
-    // 8: 1.00
-    // 9:
-    // 10: 30
-    // 11: 0
-    // 12: 30
-    // 13: 04:40
-    // 14: 05:30
-    // 15: M
-    // 16:
-    // 17:
-    // 18:
-    // 19:
-    // 20: OMANEX
-    // 21: A202
-    // 22: Ringler S
   }
 
-  // print '<pre>';
-  // print_r($json);
-  // print '</pre>';
   return $response->withJson($json);
-
-  // array_map(function ($line) {
-  //   $match = [];
-  //   preg_match(
-  //     "/(([A-Z]{2,4}) *(\d{3}) *(.*))? *(9\d{4}) *([A-Z]{1,5}) *([A-Z0-9]{1,3}) *(\d\.\d\d).(\d\.\d\d)? *(\d{1,3}) *(\d{1,3}) *(\d{1,3}) *(TBA|\d\d:\d\d) *(TBA|\d\d:\d\d) *(M| )(T| )(W| )(R| )(F| ) *([A-Z]{1,6}) *([A-Z0-9 ]{11})([A-Za-z0-9 ]{1,13})/",
-  //     $line, $match
-  //   );
-  //
-  //   if (count($match) > 0) {
-  //     $matches[] = $match;
-  //   }
-  // }, explode('\n', $pre));
-
-
-  // print 'exploded: ' . count(explode('\n', $pre)) . '<br>';
-  // print 'exploded: ' . explode('\n', $pre)[0] . '<br>';
-  // print 'matches: ' . count($matches) . '<br>';
-
-  // print '<pre>';
-  // print_r($matches);
-  // print implode('<br>', $matches[0]) . '<br>';
-  // array_map(function ($match) {
-  //   print implode(', ', $match) . '<br>';
-  // }, $matches);
-  // print '</pre>';
-
-  // $pre = $crawler->filter('pre > *')->each(function ($node) {
-  //   // print $node->text();
-  //   return $node->text();
-  // });
-  //
-  // print 'length: ' . count($pre[0]);
-  // print implode('<br>', $pre);
-
-  // return $response->withJson(array('name' => 'jacob', 'age' => 19));
 });

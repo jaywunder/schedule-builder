@@ -34,11 +34,14 @@
   color: black;
   padding-left: .5em;
   padding-right: .5em;
+  left: -.5em;
+}
+
+.Dropdown .expanded {
   left: calc(-.5em - 1px);
   border-left: 1px solid grey;
   border-right: 1px solid grey;
   border-bottom: 1px solid grey;
   border-top: none;
+  padding-bottom: .5em;
 }
-
-.Dropdown .absolute-collapse {}

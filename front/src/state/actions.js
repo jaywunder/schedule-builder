@@ -80,6 +80,13 @@ export let loadSchedule = (scheduleId) => ({
   type: types.LOAD_SCHEDULE,
   scheduleId
 })
+export let duplicateSchedule = (
+  scheduleId,
+  nextId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+) => ({
+  type: types.DUPLICATE_SCHEDULE,
+  scheduleId, nextId
+})
 export let modifyScheduleName = (scheduleId, name) => ({
   type: types.MODIFY_SCHEDULE_NAME,
   scheduleId, name
