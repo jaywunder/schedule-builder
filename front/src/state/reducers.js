@@ -1,4 +1,7 @@
 import * as types from './action-types'
+import randomColor from 'randomcolor'
+
+console.log('randomColor', randomColor({ luminosity: 'light', hue: 'orange', count: 100 }))
 
 export function courses(state = null, action) {
   switch (action.type) {
@@ -52,6 +55,8 @@ export function schedules(state = {}, action) {
       return nextState
 
     case types.REMOVE_SCHEDULE:
+      if (Object.keys(nextState).length === 1)
+        return nextState
       delete nextState[action.scheduleId]
       return nextState
 
@@ -69,8 +74,6 @@ export function schedules(state = {}, action) {
 export function queries(state = {}, action) {
   let disabledSections
   let nextState = Object.assign({}, state)
-  console.log('nextState', nextState)
-  console.log('state', state)
   nextState[action.queryId] = Object.assign({}, (state || {})[action.queryId])
 
   switch (action.type) {
@@ -80,6 +83,7 @@ export function queries(state = {}, action) {
           query: action.query,
           enabled: true,
           disabledSections: [], // fill with course ids
+          // color: randomColor({ luminosity: 'light', hue: 'green' })
         }
       }, state)
 

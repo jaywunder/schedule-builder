@@ -30,6 +30,13 @@ export default class CourseSearch extends Component {
       courses: state.courses,
       results,
     }, state.queries[this.props.queryId])
+
+    const select = () => setTimeout(() => {
+      if (!this.refs.textInput) return select()
+      this.refs.textInput.focus()
+      this.refs.textInput.setSelectionRange(0, this.refs.textInput.value.length)
+    }, 100)
+    select()
   }
 
   componentDidMount() {
@@ -107,9 +114,10 @@ export default class CourseSearch extends Component {
 
     return <div
         className="CourseSearch"
-        onMouseEnter={() => this.setState({ collapsed: false })}
-        onMouseLeave={() => this.setState({ collapsed: true })}
+        // onMouseEnter={() => this.setState({ collapsed: false })}
+        // onMouseLeave={() => this.setState({ collapsed: true })}
       >
+
       { !hasOneCourse && <div>
         <div className="search-wrapper">
           <input
@@ -146,6 +154,7 @@ export default class CourseSearch extends Component {
       { hasOneCourse && <div>
         <div className="util vertical-center">
           <Toggle state={this.state.enabled} onToggle={this.handleAllToggle}/>
+          {/* <input type='checkbox' checked={true} /> */}
           <Delete onDelete={this.handleDelete}/>
           <h4 className="title">
             { results[0].subject }&nbsp;
@@ -155,25 +164,34 @@ export default class CourseSearch extends Component {
         </div>
 
         <Collapse isOpened={isOpened}>
+          <div onClick={() => this.setState(({collapsed}) => {
+            if (hasOneCourse) return { collapsed: !collapsed }
+          })}
+          >
+            { this.groupCourses().map((group, i) =>
+              <div key={i} className="course-group">
 
-          { this.groupCourses().map((group, i) =>
-            <div key={i} className="course-group">
+                <hr style={i === 0 ? { border: 'none' } : {}}/>
 
-              <hr style={i === 0 ? { border: 'none' } : {}}/>
+                <Toggle
+                  state={!this.state.disabledSections.includes(group[0].section)}
+                  onToggle={this.onSectionToggle(group[0].section)}
+                />
 
-              <Toggle
-                state={!this.state.disabledSections.includes(group[0].section)}
-                onToggle={this.onSectionToggle(group[0].section)}
-              />
+                <div className="course-info">
+                  { group.map((course, j) =>  <Course key={j} course={course} showSection={j === 0}/> )}
+                </div>
 
-              <div className="course-info">
-                { group.map((course, j) =>  <Course key={j} course={course} showSection={j === 0}/> )}
-              </div>
-
-            </div> )}
+              </div> )}
+          </div>
         </Collapse>
 
-        {!isOpened && <div className="arrow-down">
+        {!isOpened && <div
+          className="arrow-down"
+          onClick={() => this.setState(({collapsed}) => {
+            if (hasOneCourse) return { collapsed: !collapsed }
+          })}
+        >
           ▼
         </div>}
       </div>}

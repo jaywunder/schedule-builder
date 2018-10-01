@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types'
 import BigCalendar from 'react-big-calendar'
 import TimeGrid from 'react-big-calendar/lib/TimeGrid'
-import { DropdownButton, MenuItem } from 'react-bootstrap';
-import Select from 'react-select';
+import { DropdownButton, MenuItem } from 'react-bootstrap'
+import Select from 'react-select'
 import moment from 'moment'
+import randomColor from 'randomcolor'
 
 import generateSchedule from './algo'
 import tower from './assets/uvm_tower.svg'
@@ -107,6 +108,7 @@ class App extends Component {
           title: course.subjNumSec.toUpperCase(),
           start: time.clone().hour(start[0]).minute(start[1]).second(0).toDate(),
           end: time.clone().hour(end[0]).minute(end[1]).second(0).toDate(),
+          // color: queries[course.queryId].color,
           color: colors[number % colors.length]
         })
       }
@@ -127,7 +129,7 @@ class App extends Component {
           <h1>Fall 2018</h1>
 
           <Dropdown
-            onTitleChange={this.handleSheduleTitleChange}
+            onTitleChange={this.handleSheduleTitleChange} // TODO: CHANGE THIS UGH
             scheduleName={this.state.schedules[this.state.scheduleId].name}
             scheduleId={this.state.scheduleId}
             onScheduleChange={next => next
@@ -146,7 +148,7 @@ class App extends Component {
             toolbar={false}
             events={events}
             eventPropGetter={event => ({
-              style: { background: event.color, outline: '0px solid rgba(0,0,0,0)' }
+              style: { background: event.color, outline: '0px solid rgba(0,0,0,0)', color: '#000000' }
             })}
             formats={{
               dayHeaderFormat() { return '' },

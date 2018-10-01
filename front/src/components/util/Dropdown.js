@@ -28,11 +28,16 @@ export default class Dropdown extends Component {
     let id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
     this.context.store.dispatch(addSchedule(id))
     this.context.store.dispatch(loadSchedule(id))
-    this.refs.textInput.focus()
-    this.refs.textInput.setSelectionRange(0, this.refs.textInput.value.length)
+
+    setTimeout(() => {
+      this.refs.textInput.focus()
+      this.refs.textInput.setSelectionRange(0, this.refs.textInput.value.length)
+    }, 100)
   }
 
   handleRemoveSchedule = () => {
+    if (this.props.options.length === 1) return
+
     this.context.store.dispatch(removeSchedule(this.props.scheduleId))
     this.context.store.dispatch(loadSchedule(this.props.options[0].value))
   }
@@ -62,9 +67,9 @@ export default class Dropdown extends Component {
         onClick={this.handleRemoveSchedule}
       >–</button>
 
-      <button
+      {/* <button
         onClick={this.handleDuplicateSchedule}
-      >d</button>
+      >d</button> */}
 
       <div className="relative">
         <div className={"absolute " + (this.state.collapsed ? 'collapsed' : 'expanded')}>

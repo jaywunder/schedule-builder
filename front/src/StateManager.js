@@ -49,7 +49,7 @@ export default class StateManager extends Component {
             this.saveSchedule()
 
           differences
-            .filter(queryId => queries[queryId].enabled)
+            // .filter(queryId => queries[queryId].enabled)
             .map(queryId => this.getResults(queryId))
         })
       }
@@ -128,7 +128,7 @@ export default class StateManager extends Component {
     this.context.store.dispatch(coursesSuccess(data))
     this.fetchingCourses = false
     Object.keys(this.state.queries)
-      .filter(queryId => this.state.queries[queryId].enabled)
+      // .filter(queryId => this.state.queries[queryId].enabled)
       .map(queryId => this.getResults(queryId))
   }
 

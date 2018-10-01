@@ -7,6 +7,7 @@
     "fuzzysearch": "^1.0.3",
     "moment": "^2.18.1",
     "prop-types": "^15.5.10",
+    "randomcolor": "^0.5.3",
     "react": "^15.6.1",
     "react-autosuggest": "^9.3.2",
     "react-big-calendar": "^0.14.4",
