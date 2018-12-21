@@ -23,6 +23,38 @@ const colors = [
   'rgb(40,107,176)', 'rgb(166,116,171)', 'rgb(202,180,145)', 'rgb(170,178,177)', 'rgb(167,204,182)',
   'rgb(146,150,198)', 'rgb(177,203,229)','rgb(248,212,72)','rgb(231,131,81)','rgb(216,109,105)']
 
+// const colors = [
+//   "#8ef2e0", "#7bf287", "#b5f78f", "#98f99b", "#deff75", "#69eaaa", "#6fedc7", "#70f9d9",
+//   "#ddff93", "#ccef7a", "#74f781", "#88efcf", "#abfce8", "#77f977", "#77efa9", "#9af9a7",
+//   "#79fc7f", "#88f791", "#daf99a", "#d2ffaf", "#a7f28a", "#86f473", "#b3f9a7", "#aefcd4",
+//   "#d0ffa8", "#7efc99", "#86f99c", "#a4f9bf", "#f1f79e", "#6ff29f", "#7bfcd7", "#b7f98b",
+//   "#adf986", "#b3f473", "#ebfc94", "#adffae", "#c9ef83", "#7fffd4", "#7df2c9", "#b6ffad",
+//   "#e4f995", "#8ef9ac", "#85ef81", "#d1f771", "#9bf7de", "#c6f291", "#afffce", "#a3ff89",
+//   "#9cfcbe", "#69eaa5", "#acfca1", "#b4f99f", "#aefca9", "#99fcf4", "#8ff7b9", "#8af2e6",
+//   "#b6ed7b", "#c2f975", "#a7f9de", "#81ef95", "#f9ffb2", "#98f28c", "#a5ffdc", "#96ed71",
+//   "#74fcb1", "#d1ff77", "#bbf79b", "#8bf46e", "#dbfc9f", "#cff497", "#dcffa0", "#ebffaa",
+//   "#e1ff82", "#e0f47a", "#d0f78c", "#8af2d6", "#7cefa8", "#9ef7b1", "#84f489", "#eff484",
+//   "#d3f79e", "#bdef6b", "#b9ef77", "#80f2bf", "#aef79e", "#88fc97", "#9ef274", "#ddf291",
+//   "#9ff9cf", "#d0f9a7", "#a2f98e", "#86f4a0", "#a3ffb8", "#a4fcdc", "#a9fcd9", "#e0fc99",
+//   "#bfff91", "#aaff89", "#c4fca6", "#d8ffad",
+//
+//
+//   "#edb576", "#f4b375", "#fcc78a", "#ffe9ad", "#ffd6b5", "#f7c299", "#ffc593", "#f2ce8c",
+//   "#f7e3af", "#f9c78e", "#fcc476", "#ffeebc", "#f2cb79", "#fcb77e", "#f9ba9a", "#f2c182",
+//   "#ffdea3", "#ffcaa3", "#fcca9c", "#f2d185", "#f9d6bb", "#f7ddb4", "#f4c197", "#ffe7c9",
+//   "#f9c998", "#f4be92", "#f9d4b6", "#f7b78c", "#fcc174", "#fce5ba", "#f9eabd", "#ffe8b2",
+//   "#f9d3a2", "#f9ab77", "#fcdac2", "#edb389", "#f9bc9d", "#f7e3a8", "#ffccad", "#fcbc7b",
+//   "#f7da7b", "#f9ce98", "#f7d274", "#ffe7ad", "#f2d482", "#fcbd83", "#f9af81", "#f7d0b2",
+//   "#f7cead", "#f79c71", "#ffd196", "#f7b591", "#ffebb2", "#f9c495", "#f7b58f", "#f9ce89",
+//   "#f4dd90", "#f4bf70", "#ffdcba", "#ffddb7", "#ffdbc9", "#ffd0b7", "#fce2a1", "#f9d0ae",
+//   "#ffb87f", "#ffd47f", "#ffdbc9", "#f9cfbb", "#f4d77f",
+//   "#fcc480", "#fce5b8", "#ffe3a8", "#f7c494", "#f4a46e", "#efb07c", "#efad6b", "#fcbc9c",
+//   "#f4af81", "#ffe6cc", "#f9ddac", "#ffd387", "#f9ac70", "#f9c381", "#fce4c4", "#ed9c6d",
+//   "#fcd297", "#fcd9bd", "#f7c896", "#fcbc88", "#fce1a4", "#f7c9a0", "#f7ce8c", "#ffd0aa",
+//   "#f2c685", "#edc982", "#f4d29a", "#f2bb6f", "#f7dda5", "#f7bda0", "#fff0c4",
+//
+// ]
+
 class App extends Component {
   componentWillMount() {
     const state = this.context.store.getState()

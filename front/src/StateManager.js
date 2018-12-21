@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { coursesSuccess, updateResults, loadQueries, loadSchedule, loadSchedules, addQuery, addSchedule } from './state/actions'
 import { subscribe, unsubscribe } from './util/state'
 import CSV from 'comma-separated-values'
-import csvFile from './assets/courses.csv'
+import csvFile from './assets/courses-spring2019.csv'
 
 export default class StateManager extends Component {
   constructor(...args) {
